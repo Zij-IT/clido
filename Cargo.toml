@@ -1,14 +1,15 @@
 [package]
 name = "clido"
 version = "0.1.0"
-authors = ["Zij-IT <elijah.reed@hartvigsen.xyz>"]
+authors = ["Elijah Hartvigsen <elijah.reed@hartvigsen.xyz>"]
 edition = "2018"
 license = "MIT OR Apache-2.0"
 description = "A tool for creating and maintaining a todo-list on the command line"
 readme = "README.md"
 homepage = "https://github.com/Zij-IT/clido"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+repository = "https://github.com/Zij-IT/clido"
+keywords = ["cli", "todo", "todo-list"]
+categories = ["command-line-utilties"]
 
 [dependencies]
 serde = {version = "1.0.117", features = ["derive"]}

@@ -12,7 +12,7 @@ pub mod sub_names {
     pub const ADD: &str = "add";
     pub const DEL: &str = "del";
     pub const LIST: &str = "list";
-    pub const COMP: &str = "comp";
+    pub const COMP: &str = "mark";
 }
 
 pub mod arg_names {
@@ -27,12 +27,6 @@ pub mod arg_names {
 
     pub const DEL_ID: &str = "ID";
 }
-// Examples of commands for clido
-//  - clido add -p high -s tomorrow "Water Hannah's plants"
-//  - clido add "Statistik Uebung"
-//  - clido del 1
-//  - clido list -c
-//  - clido list -p
 
 fn main() -> Result<()> {
     let matches = App::new("clido")
@@ -113,7 +107,7 @@ fn main() -> Result<()> {
                 .subcommand_matches(sub_names::DEL)
                 .expect("'del' was found... and then lost!"),
         ),
-        Some(sub_names::COMP) => cmd::complete(
+        Some(sub_names::COMP) => cmd::mark(
             matches
                 .subcommand_matches(sub_names::COMP)
                 .expect("'del' was found... and then lost!"),

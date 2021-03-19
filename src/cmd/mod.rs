@@ -77,7 +77,7 @@ pub fn delete(sub_args: &ArgMatches) -> Result<()> {
     Ok(())
 }
 
-pub fn complete(sub_args: &ArgMatches) -> Result<()> {
+pub fn mark(sub_args: &ArgMatches) -> Result<()> {
     let mut db = DatabaseFile::new(clido_dir()?);
     let mut db = db.open()?;
 

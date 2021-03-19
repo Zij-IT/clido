@@ -10,11 +10,6 @@ use std::path::{Path, PathBuf};
 
 use prettytable::Table;
 
-// This part of the code is *heavily* based on the work of a GitHub user ajeetdsouza.
-// Clido is using many of the same features to Zoxide (their tool) in order to make things
-// work efficiently, and quickly. I highly recommend you give their repo a look
-// here: https://github.com/ajeetdsouza/zoxide/
-
 pub struct Database<'a> {
     todos: ToDoList,
     data_dir: &'a Path,
