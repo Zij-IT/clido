@@ -30,7 +30,7 @@ impl Database<'_> {
             )
         })?;
 
-        let bytes = ron::ser::to_string(&self.todos)?.into_bytes();
+        let bytes = bincode::serialize(&self.todos)?;
 
         //Attempt to preallocate enough space!
         let _ = file.as_file().set_len(bytes.len() as u64);
@@ -66,7 +66,12 @@ impl Database<'_> {
     }
 
     pub fn mark_complete(&mut self, id: usize) -> bool {
-        if let Some((_, todo)) = self.todos.iter_mut().enumerate().find(|(i, _todo)| *i == id) {
+        if let Some((_, todo)) = self
+            .todos
+            .iter_mut()
+            .enumerate()
+            .find(|(i, _todo)| *i == id)
+        {
             todo.status = Status::Complete;
             self.dirty = true;
             return true;
@@ -75,8 +80,10 @@ impl Database<'_> {
     }
 
     pub fn list(&self) {
-        let mut table = Table::new();
-        table.add_row(row![
+        if self.todos.len() != 0 {
+            let mut table = Table::new();
+
+            table.set_titles(row![
             "ID",
             "Status",
             "Description",
@@ -85,27 +92,31 @@ impl Database<'_> {
             "Due Date"
         ]);
 
-        for (id, todo) in self.todos.iter().enumerate() {
-            let priority = match todo.prio {
-                Some(Priority::High) => "High",
-                Some(Priority::Medium) => "Medium",
-                Some(Priority::Low) => "Low",
-                _ => "None",
-            };
+            for (id, todo) in self.todos.iter().enumerate() {
+                let priority = match todo.prio {
+                    Some(Priority::High) => "High",
+                    Some(Priority::Medium) => "Medium",
+                    Some(Priority::Low) => "Low",
+                    _ => "None",
+                };
 
-            let status = match todo.status {
-                Status::Complete => "✓",
-                Status::Pending => "x",
-            };
+                let status = match todo.status {
+                    Status::Complete => "✓",
+                    Status::Pending => "x",
+                };
 
-            let start = todo.start.date().naive_local().to_string();
+                let start = todo.start.date().naive_local().to_string();
 
-            let id: String = id.to_string();
+                let id: String = id.to_string();
 
-            table.add_row(row![c->id, c->status, l->todo.desc, c->start, c->priority, c->"None",]);
+                table.add_row(row![c->id, c->status, l->todo.desc, c->start, c->priority, c->"None",]);
+            }
+
+            table.printstd();
         }
-
-        table.printstd();
+        else {
+            println!("There were no To-Dos to print! Good job!");
+        }
     }
 }
 
@@ -170,7 +181,7 @@ impl DatabaseFile {
         match std::fs::read(&path) {
             Ok(buffer) => {
                 self.buffer = buffer;
-                let todos = ron::de::from_bytes(&self.buffer).with_context(|| {
+                let todos = bincode::deserialize(&self.buffer).with_context(|| {
                     format!("Could not deserialize todo-list: {}", path.display())
                 })?;
 
