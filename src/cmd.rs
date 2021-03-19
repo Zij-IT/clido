@@ -14,7 +14,7 @@ pub fn add(sub_args: &ArgMatches) -> Result<()> {
             .to_string();
 
         #[allow(clippy::match_same_arms)]
-        let start = match sub_args.value_of("start_date") {
+            let start = match sub_args.value_of("start_date") {
             Some(_date) => Local::now(), //todo: this should have a list of acceptable values
             None => Local::now(),
         };
