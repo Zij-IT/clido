@@ -57,6 +57,7 @@ pub fn add(sub_args: &ArgMatches<'_>) -> Result<()> {
     let mut db = db.open()?;
     db.add(todo);
 
+    println!("Item successfully added to the list!");
     Ok(())
 }
 
@@ -70,7 +71,9 @@ pub fn delete(sub_args: &ArgMatches<'_>) -> Result<()> {
         .parse::<usize>()
         .with_context(|| "Unable to parse DEL_ID")?;
 
-    if !db.delete(id) {
+    if db.delete(id) {
+        println!("Item successfully removed from the list!");
+    } else {
         println!("The ID {} was not an ID for a ToDo", id);
     }
 
@@ -87,7 +90,9 @@ pub fn mark(sub_args: &ArgMatches<'_>) -> Result<()> {
         .parse::<usize>()
         .with_context(|| "Unable to parse DEL_ID")?;
 
-    if !db.mark_complete(id) {
+    if db.mark_complete(id) {
+        println!("Item successfully marked!");
+    } else {
         println!("The ID {} was not an ID for a ToDo", id);
     }
 

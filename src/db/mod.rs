@@ -7,7 +7,7 @@ pub use db_file::DatabaseFile;
 
 use anyhow::{Context, Result};
 use tempfile::{NamedTempFile, PersistError};
-use prettytable::Table;
+use prettytable::{Table, format};
 
 use std::io::{self, Write};
 use std::path::Path;
@@ -88,6 +88,7 @@ impl Database<'_> {
         }
 
         let mut table = Table::new();
+        table.set_format(*format::consts::FORMAT_NO_BORDER);
 
         table.set_titles(row![
             "ID",
@@ -98,6 +99,7 @@ impl Database<'_> {
             "Due Date"
         ]);
 
+        println!();
         for (id, todo) in self.todos.iter().enumerate() {
             let priority = match todo.prio {
                 Some(Priority::High) => "High",
@@ -117,8 +119,8 @@ impl Database<'_> {
 
             table.add_row(row![c->id, c->status, l->todo.desc, c->start, c->priority, c->"None",]);
         }
-
         table.printstd();
+        println!();
     }
 }
 
