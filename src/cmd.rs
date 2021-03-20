@@ -2,8 +2,9 @@ use super::db::{DatabaseFile, Priority, Status, ToDo};
 use super::util::clido_dir;
 
 use anyhow::{Context, Result};
-use chrono::Local;
+use chrono::{Local, NaiveDate, TimeZone};
 use clap::ArgMatches;
+use std::convert::TryFrom;
 
 pub mod commands {
     pub const ADD: &str = "add";
@@ -19,30 +20,21 @@ pub fn add(sub_args: &ArgMatches<'_>) -> Result<()> {
             .expect("What. This one is required, so something broke.")
             .to_string();
 
-        #[allow(clippy::match_same_arms)]
-        let start = match sub_args.value_of("start_date") {
-            Some(_date) => Local::now(), //todo: this should have a list of acceptable values
-            None => Local::now(),
-        };
+        let start = sub_args
+            .value_of("start")
+            .map_or_else(Local::now, |date| {
+                let naive = NaiveDate::parse_from_str(date, "%d-%m-%Y").unwrap();
+                Local
+                    .from_local_datetime(&(naive.and_hms(0, 0, 0))).unwrap()
+            });
 
-        // Although there are only four (high, medium, low, NONE) possible values allowed for priority
-        // there is no reason to panic should the value SOMEHOW be not among the
-        // listed values. Just default to none, and inform the user that the priority
-        // may not be correctly set
-        // todo: If the value is Some(_) inform the user that the priority may not be correctly set.
+        let prio = Priority::try_from(sub_args.value_of("priority")).ok();
 
-        let prio = match sub_args.value_of("priority") {
-            Some("high") => Some(Priority::High),
-            Some("medium") => Some(Priority::Medium),
-            Some("low") => Some(Priority::Low),
-            Some(_) | None => None,
-        };
-
-        // todo: Define some values that can be used to assign a due date.
-        // Examples of possible acceptable input
-        //  - clido add -p high -d [tomorrow, week, two-weeks, month]
-        //  - clido add -p medium -d 23.12.2020
-        let due = None;
+        let due = sub_args.value_of("due_date").map(|date| {
+            let naive = NaiveDate::parse_from_str(date, "%d-%m-%Y").unwrap();
+            Local
+                .from_local_datetime(&(naive.and_hms(0, 0, 0))).unwrap()
+        });
 
         ToDo {
             desc,

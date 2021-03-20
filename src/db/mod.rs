@@ -1,13 +1,13 @@
-mod todo;
 mod db_file;
+mod todo;
 
+pub use db_file::DatabaseFile;
 use todo::ToDoList;
 pub use todo::{Priority, Status, ToDo};
-pub use db_file::DatabaseFile;
 
 use anyhow::{Context, Result};
+use prettytable::{format, Table};
 use tempfile::{NamedTempFile, PersistError};
-use prettytable::{Table, format};
 
 use std::io::{self, Write};
 use std::path::Path;
@@ -117,7 +117,13 @@ impl Database<'_> {
 
             let id: String = id.to_string();
 
-            table.add_row(row![c->id, c->status, l->todo.desc, c->start, c->priority, c->"None",]);
+            let due_date = todo.due.map_or_else(
+                || String::from("None"),
+                |d| d.naive_local().date().to_string(),
+            );
+
+            table
+                .add_row(row![c->id, c->status, l->todo.desc, c->start, c->priority, c->due_date,]);
         }
         table.printstd();
         println!();
