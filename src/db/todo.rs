@@ -1,4 +1,4 @@
-use chrono::{DateTime, Local};
+use chrono::{Local, NaiveDateTime};
 use serde::{Deserialize, Serialize};
 use std::ops::{Deref, DerefMut};
 use std::convert::TryFrom;
@@ -42,11 +42,11 @@ impl From<Vec<ToDo>> for ToDoList {
 pub struct ToDo {
     // Optional
     pub recur: Option<Recurrence>,
-    pub due: Option<DateTime<Local>>,
+    pub due: Option<NaiveDateTime>,
     pub prio: Option<Priority>,
 
     // Required
-    pub start: DateTime<Local>,
+    pub start: NaiveDateTime,
     pub desc: String,
     pub status: Status,
     pub tags: Vec<String>, // Allowed to be empty
@@ -80,9 +80,9 @@ impl TryFrom<Option<&str>> for Priority {
 
 #[derive(PartialEq, Serialize, Deserialize)]
 pub enum Recurrence {
-    Daily(DateTime<Local>),
-    Weekly(DateTime<Local>),
-    Monthly(DateTime<Local>),
-    Yearly(DateTime<Local>),
-    Quarterly(DateTime<Local>),
+    Daily(NaiveDateTime),
+    Weekly(NaiveDateTime),
+    Monthly(NaiveDateTime),
+    Yearly(NaiveDateTime),
+    Quarterly(NaiveDateTime),
 }

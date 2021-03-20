@@ -32,7 +32,7 @@ impl Database<'_> {
             )
         })?;
 
-        let bytes = bincode::serialize(&self.todos)?;
+        let bytes = serde_json::to_string_pretty(&self.todos)?.into_bytes();
 
         //Attempt to preallocate enough space!
         let _ = file.as_file().set_len(bytes.len() as u64);
@@ -113,13 +113,13 @@ impl Database<'_> {
                 Status::Pending => "x",
             };
 
-            let start = todo.start.date().naive_local().to_string();
+            let start = todo.start.date().to_string();
 
             let id: String = id.to_string();
 
             let due_date = todo.due.map_or_else(
                 || String::from("None"),
-                |d| d.naive_local().date().to_string(),
+                |d| d.date().to_string(),
             );
 
             table

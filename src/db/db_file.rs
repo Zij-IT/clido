@@ -2,7 +2,6 @@ use super::{list_path, Database};
 use std::path::PathBuf;
 
 use anyhow::{Context, Result};
-use bincode::Options;
 
 pub struct DatabaseFile {
     data_dir: PathBuf,
@@ -22,8 +21,8 @@ impl DatabaseFile {
         match std::fs::read(&path) {
             Ok(buffer) => {
                 self.buffer = buffer;
-
-                let todos = bincode::deserialize(&self.buffer).with_context(|| {
+                let string = std::str::from_utf8(&self.buffer)?;
+                let todos = serde_json::from_str(string).with_context(|| {
                     format!("Could not deserialize todo-list: {}", path.display())
                 })?;
 

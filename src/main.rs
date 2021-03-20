@@ -20,6 +20,10 @@ use crate::args::{valid_date, valid_priority};
 use anyhow::Result;
 use clap::{clap_app, crate_authors, crate_description, crate_version};
 
+//todo: Entering the following two commands breaks the serialization / deserialization
+// add -d 02-10-2021 -s 01-10-2023 "hello there"
+// add -p high "hello there" -d 23-01-1232 -s 14-02-2321
+
 fn main() -> Result<()> {
     let matches = clap_app!(clido =>
         (author: crate_authors!())
