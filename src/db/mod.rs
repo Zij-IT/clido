@@ -1,14 +1,16 @@
 mod todo;
-use todo::*;
+mod db_file;
+
+use todo::ToDoList;
 pub use todo::{Priority, Status, ToDo};
+pub use db_file::DatabaseFile;
 
 use anyhow::{Context, Result};
 use tempfile::{NamedTempFile, PersistError};
+use prettytable::Table;
 
 use std::io::{self, Write};
-use std::path::{Path, PathBuf};
-
-use prettytable::Table;
+use std::path::Path;
 
 pub struct Database<'a> {
     todos: ToDoList,
@@ -80,10 +82,14 @@ impl Database<'_> {
     }
 
     pub fn list(&self) {
-        if self.todos.len() != 0 {
-            let mut table = Table::new();
+        if self.todos.len() == 0 {
+            println!("There were no To-Dos to print! Good job!");
+            return;
+        }
 
-            table.set_titles(row![
+        let mut table = Table::new();
+
+        table.set_titles(row![
             "ID",
             "Status",
             "Description",
@@ -92,31 +98,27 @@ impl Database<'_> {
             "Due Date"
         ]);
 
-            for (id, todo) in self.todos.iter().enumerate() {
-                let priority = match todo.prio {
-                    Some(Priority::High) => "High",
-                    Some(Priority::Medium) => "Medium",
-                    Some(Priority::Low) => "Low",
-                    _ => "None",
-                };
+        for (id, todo) in self.todos.iter().enumerate() {
+            let priority = match todo.prio {
+                Some(Priority::High) => "High",
+                Some(Priority::Medium) => "Medium",
+                Some(Priority::Low) => "Low",
+                _ => "None",
+            };
 
-                let status = match todo.status {
-                    Status::Complete => "✓",
-                    Status::Pending => "x",
-                };
+            let status = match todo.status {
+                Status::Complete => "\u{2713}",
+                Status::Pending => "x",
+            };
 
-                let start = todo.start.date().naive_local().to_string();
+            let start = todo.start.date().naive_local().to_string();
 
-                let id: String = id.to_string();
+            let id: String = id.to_string();
 
-                table.add_row(row![c->id, c->status, l->todo.desc, c->start, c->priority, c->"None",]);
-            }
-
-            table.printstd();
+            table.add_row(row![c->id, c->status, l->todo.desc, c->start, c->priority, c->"None",]);
         }
-        else {
-            println!("There were no To-Dos to print! Good job!");
-        }
+
+        table.printstd();
     }
 }
 
@@ -161,50 +163,6 @@ fn persist<P: AsRef<Path>>(mut file: NamedTempFile, path: P) -> Result<(), Persi
 fn persist<P: AsRef<Path>>(file: NamedTempFile, path: P) -> Result<(), PersistError> {
     file.persist(&path)?;
     Ok(())
-}
-
-pub struct DatabaseFile {
-    data_dir: PathBuf,
-    buffer: Vec<u8>,
-}
-
-impl DatabaseFile {
-    pub fn new<P: Into<PathBuf>>(data_dir: P) -> Self {
-        Self {
-            data_dir: data_dir.into(),
-            buffer: Vec::new(),
-        }
-    }
-
-    pub fn open(&mut self) -> Result<Database> {
-        let path = list_path(&self.data_dir);
-        match std::fs::read(&path) {
-            Ok(buffer) => {
-                self.buffer = buffer;
-                let todos = bincode::deserialize(&self.buffer).with_context(|| {
-                    format!("Could not deserialize todo-list: {}", path.display())
-                })?;
-
-                Ok(Database {
-                    todos,
-                    data_dir: &self.data_dir,
-                    dirty: false,
-                })
-            }
-            Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
-                std::fs::create_dir_all(&self.data_dir).expect("Unable to create dir");
-
-                Ok(Database {
-                    todos: Vec::new().into(),
-                    data_dir: &self.data_dir,
-                    dirty: false,
-                })
-            }
-            Err(e) => {
-                Err(e).with_context(|| format!("could not read from database: {}", path.display()))
-            }
-        }
-    }
 }
 
 fn list_path<P: AsRef<Path>>(data_dir: P) -> std::path::PathBuf {

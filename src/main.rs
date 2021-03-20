@@ -1,12 +1,20 @@
+#![warn(
+    clippy::perf,
+    clippy::style,
+    clippy::nursery,
+    rust_2018_idioms,
+    clippy::pedantic
+)]
+
+#[macro_use]
+extern crate prettytable;
+
 mod cmd;
 mod db;
 mod util;
 
-use anyhow::Result;
+use anyhow::{Result, Context};
 use clap::{crate_authors, crate_version, App, Arg, SubCommand};
-
-#[macro_use]
-extern crate prettytable;
 
 pub mod sub_names {
     pub const ADD: &str = "add";
@@ -97,21 +105,45 @@ fn main() -> Result<()> {
         .get_matches();
 
     match matches.subcommand_name() {
-        Some(sub_names::ADD) => cmd::add(
-            matches
-                .subcommand_matches(sub_names::ADD)
-                .expect("'add' was found... and then lost!"),
-        ),
-        Some(sub_names::DEL) => cmd::delete(
-            matches
-                .subcommand_matches(sub_names::DEL)
-                .expect("'del' was found... and then lost!"),
-        ),
-        Some(sub_names::COMP) => cmd::mark(
-            matches
-                .subcommand_matches(sub_names::COMP)
-                .expect("'del' was found... and then lost!"),
-        ),
+        Some(sub_names::ADD) => {
+            match cmd::add(
+                matches
+                    .subcommand_matches(sub_names::ADD)
+                    .expect("'add' was found... and then lost!"),
+            ) {
+                Ok(_) => {
+                    println!("Item added to the list!");
+                    Ok(())
+                }
+                Err(e) => Err(e).with_context(|| "Error adding the item.")
+            }
+        },
+        Some(sub_names::DEL) => {
+            match cmd::delete(
+                matches
+                    .subcommand_matches(sub_names::DEL)
+                    .expect("'del' was found... and then lost!"),
+            ) {
+                Ok(_) => {
+                    println!("Item removed from your list!");
+                    Ok(())
+                }
+                Err(e) => Err(e).with_context(|| "Error deleting an item.")
+            }
+        },
+        Some(sub_names::COMP) =>  {
+            match cmd::mark(
+                matches
+                    .subcommand_matches(sub_names::COMP)
+                    .expect("'del' was found... and then lost!"),
+            ) {
+                Ok(_) => {
+                    println!("Item successfully marked!");
+                    Ok(())
+                }
+                Err(e) => Err(e).with_context(|| "Error marking the item to todo")
+            }
+        },
         Some(sub_names::LIST) => cmd::list(),
         _ => Ok(()),
     }

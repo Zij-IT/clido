@@ -21,3 +21,7 @@ dirs-next = "2.0.0"
 anyhow = "1.0.38"
 prettytable-rs = "0.8.0"
 
+[profile.release]
+lto = true
+codegen-units = 1
+

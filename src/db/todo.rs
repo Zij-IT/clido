@@ -21,7 +21,7 @@ impl DerefMut for ToDoList {
 
 impl From<Vec<ToDo>> for ToDoList {
     fn from(todos: Vec<ToDo>) -> Self {
-        ToDoList(todos)
+        Self(todos)
     }
 }
 

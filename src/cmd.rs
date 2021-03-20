@@ -6,7 +6,7 @@ use anyhow::{Context, Result};
 use chrono::Local;
 use clap::ArgMatches;
 
-pub fn add(sub_args: &ArgMatches) -> Result<()> {
+pub fn add(sub_args: &ArgMatches<'_>) -> Result<()> {
     let todo = {
         let desc = sub_args
             .value_of(arg_names::TODO)
@@ -60,7 +60,7 @@ pub fn add(sub_args: &ArgMatches) -> Result<()> {
     Ok(())
 }
 
-pub fn delete(sub_args: &ArgMatches) -> Result<()> {
+pub fn delete(sub_args: &ArgMatches<'_>) -> Result<()> {
     let mut db = DatabaseFile::new(clido_dir()?);
     let mut db = db.open()?;
 
@@ -77,7 +77,7 @@ pub fn delete(sub_args: &ArgMatches) -> Result<()> {
     Ok(())
 }
 
-pub fn mark(sub_args: &ArgMatches) -> Result<()> {
+pub fn mark(sub_args: &ArgMatches<'_>) -> Result<()> {
     let mut db = DatabaseFile::new(clido_dir()?);
     let mut db = db.open()?;
 
