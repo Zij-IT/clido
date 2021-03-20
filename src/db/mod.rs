@@ -83,7 +83,7 @@ impl Database<'_> {
 
     pub fn list(&self) {
         if self.todos.len() == 0 {
-            println!("There were no To-Dos to print! Good job!");
+            println!("\nThere were no To-Dos to print! Good job!\n");
             return;
         }
 
@@ -91,12 +91,12 @@ impl Database<'_> {
         table.set_format(*format::consts::FORMAT_NO_BORDER);
 
         table.set_titles(row![
-            "ID",
-            "Status",
-            "Description",
-            "Start",
-            "Priority",
-            "Due Date"
+            bc-> "ID",
+            bc-> "Status",
+            bl->"Description",
+            bc-> "Start",
+            bc-> "Priority",
+            bc-> "Due Date"
         ]);
 
         println!();

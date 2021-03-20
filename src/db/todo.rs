@@ -25,16 +25,31 @@ impl From<Vec<ToDo>> for ToDoList {
     }
 }
 
+// What makes a to-do:
+// Req:
+// - Description    -> String
+// - Start Date     -> DateTime<Local>
+// - Status         -> StatusEnum
+// Optional:        -> Option<X>
+// - Tags               -> Vec<String>
+// - Due Date           -> DateTime<Local>
+// - Priority           -> PriorityEnum
+// - Recur              -> String
+//   - Requires "until" -> DateTime<Local>
+
 #[derive(PartialEq, Serialize, Deserialize)]
 pub struct ToDo {
-    // Required
-    pub desc: String,
-    pub start: DateTime<Local>,
-    pub status: Status,
-
     // Optional
-    pub prio: Option<Priority>,
+    pub recur: Option<Recurrence>,
     pub due: Option<DateTime<Local>>,
+    pub prio: Option<Priority>,
+
+    // Required
+    pub start: DateTime<Local>,
+    pub desc: String,
+    pub status: Status,
+    pub tags: Vec<String>, // Allowed to be empty
+
 }
 
 #[derive(PartialEq, Serialize, Deserialize)]
@@ -48,4 +63,13 @@ pub enum Priority {
     Low,
     Medium,
     High,
+}
+
+#[derive(PartialEq, Serialize, Deserialize)]
+pub enum Recurrence {
+    Daily(DateTime<Local>),
+    Weekly(DateTime<Local>),
+    Monthly(DateTime<Local>),
+    Yearly(DateTime<Local>),
+    Quarterly(DateTime<Local>),
 }

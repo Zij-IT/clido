@@ -1,4 +1,3 @@
-use super::arg_names;
 use super::db::{DatabaseFile, Priority, Status, ToDo};
 use super::util::clido_dir;
 
@@ -6,10 +5,17 @@ use anyhow::{Context, Result};
 use chrono::Local;
 use clap::ArgMatches;
 
+pub mod commands {
+    pub const ADD: &str = "add";
+    pub const DEL: &str = "del";
+    pub const LIST: &str = "list";
+    pub const MARK: &str = "mark";
+}
+
 pub fn add(sub_args: &ArgMatches<'_>) -> Result<()> {
     let todo = {
         let desc = sub_args
-            .value_of(arg_names::TODO)
+            .value_of("todo")
             .expect("What. This one is required, so something broke.")
             .to_string();
 
@@ -36,10 +42,7 @@ pub fn add(sub_args: &ArgMatches<'_>) -> Result<()> {
         // Examples of possible acceptable input
         //  - clido add -p high -d [tomorrow, week, two-weeks, month]
         //  - clido add -p medium -d 23.12.2020
-
-        let due = match sub_args.value_of("due_date") {
-            _ => None,
-        };
+        let due = None;
 
         ToDo {
             desc,
@@ -47,6 +50,8 @@ pub fn add(sub_args: &ArgMatches<'_>) -> Result<()> {
             prio,
             due,
             status: Status::Pending,
+            tags: vec![],
+            recur: None,
         }
     };
 
@@ -66,7 +71,7 @@ pub fn delete(sub_args: &ArgMatches<'_>) -> Result<()> {
     let mut db = db.open()?;
 
     let id = sub_args
-        .value_of(arg_names::DEL_ID)
+        .value_of("id")
         .with_context(|| "DEL_ID was not provided")?
         .parse::<usize>()
         .with_context(|| "Unable to parse DEL_ID")?;
@@ -85,7 +90,7 @@ pub fn mark(sub_args: &ArgMatches<'_>) -> Result<()> {
     let mut db = db.open()?;
 
     let id = sub_args
-        .value_of(arg_names::DEL_ID)
+        .value_of("id")
         .with_context(|| "DEL_ID was not provided")?
         .parse::<usize>()
         .with_context(|| "Unable to parse DEL_ID")?;
