@@ -1,7 +1,7 @@
-use chrono::{Local, NaiveDateTime};
+use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
-use std::ops::{Deref, DerefMut};
 use std::convert::TryFrom;
+use std::ops::{Deref, DerefMut};
 
 #[derive(Serialize, Deserialize)]
 pub struct ToDoList(Vec<ToDo>);
@@ -70,9 +70,9 @@ impl TryFrom<Option<&str>> for Priority {
 
     fn try_from(string: Option<&str>) -> Result<Self, Self::Error> {
         match string {
-            Some("high") => Ok(Priority::High),
-            Some("medium") => Ok(Priority::Medium),
-            Some("low") => Ok(Priority::Low),
+            Some("high") => Ok(Self::High),
+            Some("medium") => Ok(Self::Medium),
+            Some("low") => Ok(Self::Low),
             _ => Err(()),
         }
     }

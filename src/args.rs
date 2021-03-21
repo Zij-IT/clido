@@ -11,6 +11,7 @@ arg_enum! {
     }
 }
 
+#[allow(clippy::needless_pass_by_value)]
 pub fn valid_priority(prio: String) -> Result<(), String> {
     if Priority::variants().contains(&&*prio) {
         Ok(())
@@ -19,6 +20,7 @@ pub fn valid_priority(prio: String) -> Result<(), String> {
     }
 }
 
+#[allow(clippy::needless_pass_by_value)]
 pub fn valid_date(date: String) -> Result<(), String> {
     if NaiveDate::parse_from_str(&date, "%d-%m-%Y").is_ok() {
         Ok(())

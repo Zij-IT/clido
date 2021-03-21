@@ -2,7 +2,7 @@ use super::db::{DatabaseFile, Priority, Status, ToDo};
 use super::util::clido_dir;
 
 use anyhow::{Context, Result};
-use chrono::{Local, NaiveDate, TimeZone, NaiveDateTime};
+use chrono::{Local, NaiveDate};
 use clap::ArgMatches;
 use std::convert::TryFrom;
 
@@ -20,12 +20,13 @@ pub fn add(sub_args: &ArgMatches<'_>) -> Result<()> {
             .expect("What. This one is required, so something broke.")
             .to_string();
 
-        let start = sub_args
-            .value_of("start")
-            .map_or_else(|| { Local::now().naive_local() }, |date| {
+        let start = sub_args.value_of("start").map_or_else(
+            || Local::now().naive_local(),
+            |date| {
                 let naive = NaiveDate::parse_from_str(date, "%d-%m-%Y").unwrap();
                 naive.and_hms(0, 0, 0)
-            });
+            },
+        );
 
         let prio = Priority::try_from(sub_args.value_of("priority")).ok();
 

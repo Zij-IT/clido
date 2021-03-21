@@ -32,7 +32,7 @@ impl Database<'_> {
             )
         })?;
 
-        let bytes = serde_json::to_string_pretty(&self.todos)?.into_bytes();
+        let bytes = bincode::serialize(&self.todos)?;
 
         //Attempt to preallocate enough space!
         let _ = file.as_file().set_len(bytes.len() as u64);
@@ -117,10 +117,9 @@ impl Database<'_> {
 
             let id: String = id.to_string();
 
-            let due_date = todo.due.map_or_else(
-                || String::from("None"),
-                |d| d.date().to_string(),
-            );
+            let due_date = todo
+                .due
+                .map_or_else(|| String::from("None"), |d| d.date().to_string());
 
             table
                 .add_row(row![c->id, c->status, l->todo.desc, c->start, c->priority, c->due_date,]);

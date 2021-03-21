@@ -21,8 +21,7 @@ impl DatabaseFile {
         match std::fs::read(&path) {
             Ok(buffer) => {
                 self.buffer = buffer;
-                let string = std::str::from_utf8(&self.buffer)?;
-                let todos = serde_json::from_str(string).with_context(|| {
+                let todos = bincode::deserialize(&self.buffer).with_context(|| {
                     format!("Could not deserialize todo-list: {}", path.display())
                 })?;
 
