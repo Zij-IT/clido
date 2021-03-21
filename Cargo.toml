@@ -9,7 +9,7 @@ readme = "README.md"
 homepage = "https://github.com/Zij-IT/clido"
 repository = "https://github.com/Zij-IT/clido"
 keywords = ["cli", "todo", "todo-list"]
-categories = ["command-line-utilties"]
+categories = ["command-line-utilities"]
 
 [dependencies]
 serde = {version = "1.0.117", features = ["derive"]}
