@@ -53,6 +53,7 @@ clido has the following functionalities:
 - `_CLIDO_DIR`
   - Specifies the directory in which clido should store its database.
   - The default value varies across OSes:
+    
     | OS          | Path                                     | Example                                    |
     | ----------- | ---------------------------------------- | ------------------------------------------ |
     | Linux / BSD | `$XDG_DATA_HOME` or `$HOME/.local/share` | `/home/alice/.local/share`                 |
