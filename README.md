@@ -65,7 +65,6 @@ Clido is still lacking many of the features I would like, such as:
 - [x] Filters
 - [ ] Named Dates
 - [x] End Dates (via date)
-- [ ] Dates via name (Monday, Tuesday, ...)
 - [ ] Recurring Tasks (Marks self as pending every specified interval)
 - [x] Colors
 - [ ] Color Themes
