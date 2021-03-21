@@ -31,10 +31,11 @@ fn main() -> Result<()> {
         (@subcommand add =>
             (about: "Adds an item to your todo list")
             (@setting ColoredHelp)
-            (@arg todo: <INPUT> "Item to be added.")
             (@arg priority: -p --priority [PRIO] {valid_priority} "Sets the priority of the item")
             (@arg start: -s --start [START] {valid_date} "Sets the start date of the item")
             (@arg due_date: -d --due [DUE] {valid_date} "Sets the due date of the item")
+            (@arg tags: -t --tags [TAGS] min_values(1) "Adds the following tags to the item")
+            (@arg todo: <INPUT> "Item to be added.")
         )
         (@subcommand del =>
             (about: "Deletes an item from your todo-list")
@@ -49,6 +50,9 @@ fn main() -> Result<()> {
         (@subcommand list =>
             (about: "Lists all items on the todo-list")
             (@setting ColoredHelp)
+            (@arg is_comp: -c --complete "Lists only complete items")
+            (@arg is_pend: -p --pending "Lists only pending items")
+            (@arg filter: -f --filter +takes_value min_values(1) "Filters list to only output todos that have the tag(s)")
         )
     )
     .get_matches();
@@ -57,7 +61,7 @@ fn main() -> Result<()> {
         (commands::ADD, Some(matches)) => cmd::add(matches),
         (commands::DEL, Some(matches)) => cmd::delete(matches),
         (commands::MARK, Some(matches)) => cmd::mark(matches),
-        (commands::LIST, _) => cmd::list(),
+        (commands::LIST, Some(matches)) => cmd::list(matches),
         _ => Ok(()),
     }
 }

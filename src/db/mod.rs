@@ -6,7 +6,6 @@ use todo::ToDoList;
 pub use todo::{Priority, Status, ToDo};
 
 use anyhow::{Context, Result};
-use prettytable::{format, Table};
 use tempfile::{NamedTempFile, PersistError};
 
 use std::io::{self, Write};
@@ -55,7 +54,6 @@ impl Database<'_> {
             self.todos.push(to_add);
             self.dirty = true;
         }
-        // else let the user know that a similar task already exists
     }
 
     pub fn delete(&mut self, id: usize) -> bool {
@@ -81,51 +79,8 @@ impl Database<'_> {
         false
     }
 
-    pub fn list(&self) {
-        if self.todos.len() == 0 {
-            println!("\nThere were no To-Dos to print! Good job!\n");
-            return;
-        }
-
-        let mut table = Table::new();
-        table.set_format(*format::consts::FORMAT_NO_BORDER);
-
-        table.set_titles(row![
-            bc-> "ID",
-            bc-> "Status",
-            bl->"Description",
-            bc-> "Start",
-            bc-> "Priority",
-            bc-> "Due Date"
-        ]);
-
-        println!();
-        for (id, todo) in self.todos.iter().enumerate() {
-            let priority = match todo.prio {
-                Some(Priority::High) => "High",
-                Some(Priority::Medium) => "Medium",
-                Some(Priority::Low) => "Low",
-                _ => "None",
-            };
-
-            let status = match todo.status {
-                Status::Complete => "\u{2713}",
-                Status::Pending => "x",
-            };
-
-            let start = todo.start.date().to_string();
-
-            let id: String = id.to_string();
-
-            let due_date = todo
-                .due
-                .map_or_else(|| String::from("None"), |d| d.date().to_string());
-
-            table
-                .add_row(row![c->id, c->status, l->todo.desc, c->start, c->priority, c->due_date,]);
-        }
-        table.printstd();
-        println!();
+    pub const fn todos(&self) -> &ToDoList {
+        &self.todos
     }
 }
 

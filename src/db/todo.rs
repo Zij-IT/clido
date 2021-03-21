@@ -58,6 +58,15 @@ pub enum Status {
     Pending,
 }
 
+impl Status {
+    pub const fn as_symbol(&self) -> &str {
+        match self {
+            Self::Complete => "\u{2713}",
+            Self::Pending => "x",
+        }
+    }
+}
+
 #[derive(PartialEq, Serialize, Deserialize)]
 pub enum Priority {
     Low,
@@ -65,9 +74,18 @@ pub enum Priority {
     High,
 }
 
+impl ToString for Priority {
+    fn to_string(&self) -> String {
+        String::from(match self {
+            Self::Low => "Low",
+            Self::Medium => "Medium",
+            Self::High => "High",
+        })
+    }
+}
+
 impl TryFrom<Option<&str>> for Priority {
     type Error = ();
-
     fn try_from(string: Option<&str>) -> Result<Self, Self::Error> {
         match string {
             Some("high") => Ok(Self::High),

@@ -4,6 +4,8 @@ use super::util::clido_dir;
 use anyhow::{Context, Result};
 use chrono::{Local, NaiveDate};
 use clap::ArgMatches;
+use prettytable::{format, Table};
+
 use std::convert::TryFrom;
 
 pub mod commands {
@@ -35,14 +37,18 @@ pub fn add(sub_args: &ArgMatches<'_>) -> Result<()> {
             naive.and_hms(0, 0, 0)
         });
 
+        let tags = sub_args
+            .values_of("tags")
+            .map_or(Vec::new(), |tags| tags.map(str::to_string).collect());
+
         ToDo {
             desc,
             start,
             prio,
             due,
-            status: Status::Pending,
-            tags: vec![],
+            tags,
             recur: None,
+            status: Status::Pending,
         }
     };
 
@@ -95,10 +101,76 @@ pub fn mark(sub_args: &ArgMatches<'_>) -> Result<()> {
     Ok(())
 }
 
-pub fn list() -> Result<()> {
+pub fn list(sub_args: &ArgMatches<'_>) -> Result<()> {
     let mut db = DatabaseFile::new(clido_dir()?);
+    let db = db.open()?;
+    let todos = db.todos();
 
-    db.open()?.list();
+    if todos.len() == 0 {
+        println!("\nThere were no To-Dos to print! Good job!\n");
+        return Ok(());
+    }
+
+    let filters = sub_args
+        .values_of("filter")
+        .map(|args| args.into_iter().map(str::to_string).collect::<Vec<_>>());
+
+    let req_comp = sub_args.is_present("is_comp");
+    let req_pend = sub_args.is_present("is_pend");
+
+    let mut table = get_list_table();
+    let mut hit = false;
+
+    for (id, todo) in todos.iter().enumerate() {
+        if let Some(filter_list) = filters.as_ref() {
+            if !filter_list.iter().any(|filter| todo.tags.contains(filter)) {
+                continue;
+            }
+        }
+
+        if (req_comp && todo.status != Status::Complete) || (req_pend && todo.status != Status::Pending) {
+            continue;
+        }
+
+        hit = true;
+
+        let id: String = id.to_string();
+        let status = todo.status.as_symbol();
+        let start = todo.start.date().to_string();
+        let priority = todo
+            .prio
+            .as_ref()
+            .map_or(String::from("None"), |p| p.to_string());
+        let due_date = todo
+            .due
+            .map_or_else(|| String::from("None"), |d| d.date().to_string());
+
+        table.add_row(row![c->id, c->status, l->todo.desc, c->start, c->priority, c->due_date,]);
+    }
+
+    if hit {
+        println!();
+        table.printstd();
+        println!();
+    } else {
+        println!("\nThere were no To-Dos to matching those filters!\n");
+    }
 
     Ok(())
+}
+
+fn get_list_table() -> Table {
+    let mut table = Table::new();
+    table.set_format(*format::consts::FORMAT_NO_BORDER);
+
+    table.set_titles(row![
+        bc-> "ID",
+        bc-> "Status",
+        bl->"Description",
+        bc-> "Start",
+        bc-> "Priority",
+        bc-> "Due Date"
+    ]);
+
+    table
 }

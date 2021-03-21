@@ -41,11 +41,13 @@ Clido's commands follow the following format:
 `clido [Subcommand] [Flags] [Input]`
 
 clido has the following functionalities:
-| Goal                  | Command    | Options                                   | Input                                                   |
-|-----------------------|------------|-------------------------------------------|---------------------------------------------------------|
-| add a to-do           | clido add  | `-s` OR `--start`<br>`-p` OR `--priority` | "Put the task you want here"                            |
-| delete a to-do        | clido del  |                                           | The ID number of the task you<br>want to delete         |
-| mark a to-do complete | clido mark |                                           | The ID number of the task you<br>want to mark complete. |  
+
+| Goal                        | Command    | Options                                    | Input                                                   |
+|-----------------------------|------------|--------------------------------------------|---------------------------------------------------------|
+| Add an item                 | clido add  | -s  --start<br>-d  --due<br>-p  --priority | "Put the task you want here"                            |
+| Delete an item              | clido del  |                                            | The ID number of the task you<br>want to delete.        |
+| Mark an item as<br>complete | clido mark |                                            | The ID number of the task you<br>want to mark complete. |
+| List items                  | clido list | -f --filter                                | Filters that an item must have<br>to be shown           |  
 
 ## Enviroment Variables
 - `_CLIDO_DIR`
@@ -59,13 +61,13 @@ clido has the following functionalities:
 
 ## ToDo
 Clido is still lacking many of the features I would like, such as:
-- [ ] Groups
-- [ ] Filters / Searching
+- [x] Groups (tags)
+- [x] Filters
 - [ ] Named Dates
 - [x] End Dates (via date)
-- [ ] End Dates (via name ex: Monday)
-- [ ] Recurring Tasks
-- [ ] Colors
+- [ ] Dates via name (Monday, Tuesday, ...)
+- [ ] Recurring Tasks (Marks self as pending every specified interval)
+- [x] Colors
 - [ ] Color Themes
 - [ ] Interactive marking / deleting using fzf
 - [ ] Configurable output
