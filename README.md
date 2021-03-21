@@ -47,7 +47,7 @@ clido has the following functionalities:
 | Add an item                 | clido add  | -s  --start<br>-d  --due<br>-p  --priority | "Put the task you want here"                            |
 | Delete an item              | clido del  |                                            | The ID number of the task you<br>want to delete.        |
 | Mark an item as<br>complete | clido mark |                                            | The ID number of the task you<br>want to mark complete. |
-| List items                  | clido list | -f --filter                                | Filters that an item must have<br>to be shown           |  
+| List items                  | clido list | -f --filter<br>-c --complete<br>-p --priority | Filters that an item must have<br>to be shown           |  
 
 ## Enviroment Variables
 - `_CLIDO_DIR`
