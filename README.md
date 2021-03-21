@@ -62,7 +62,7 @@ Clido is still lacking many of the features I would like, such as:
 - [ ] Groups
 - [ ] Filters / Searching
 - [ ] Named Dates
-- [ ] End Dates (via date)
+- [x] End Dates (via date)
 - [ ] End Dates (via name ex: Monday)
 - [ ] Recurring Tasks
 - [ ] Colors

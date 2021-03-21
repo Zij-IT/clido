@@ -25,8 +25,12 @@ fn main() -> Result<()> {
         (author: crate_authors!())
         (version: crate_version!())
         (about: crate_description!())
+        (@setting UnifiedHelpMessage)
+        (@setting SubcommandRequiredElseHelp)
+        (@setting ColoredHelp)
         (@subcommand add =>
             (about: "Adds an item to your todo list")
+            (@setting ColoredHelp)
             (@arg todo: <INPUT> "Item to be added.")
             (@arg priority: -p --priority [PRIO] {valid_priority} "Sets the priority of the item")
             (@arg start: -s --start [START] {valid_date} "Sets the start date of the item")
@@ -34,13 +38,18 @@ fn main() -> Result<()> {
         )
         (@subcommand del =>
             (about: "Deletes an item from your todo-list")
+            (@setting ColoredHelp)
             (@arg id: <ID> "ID of the item to be deleted")
         )
         (@subcommand mark =>
             (about: "Deletes an item from your todo-list")
+            (@setting ColoredHelp)
             (@arg id: <ID> "ID of the item to be deleted")
         )
-        (@subcommand list => (about: "Lists all items on the todo-list"))
+        (@subcommand list =>
+            (about: "Lists all items on the todo-list")
+            (@setting ColoredHelp)
+        )
     )
     .get_matches();
 
