@@ -1,22 +1,16 @@
 use chrono::NaiveDate;
-use clap::arg_enum;
 
-arg_enum! {
-    #[allow(non_camel_case_types)]
-    #[derive(PartialEq)]
-    pub enum Priority {
-        high,
-        mid,
-        low,
-    }
-}
+// I would love the pass the values by reference,
+// however doing that prevents it from compiling, as clap
+// expects a function fn(String)->Result<(), String>
 
 #[allow(clippy::needless_pass_by_value)]
 pub fn valid_priority(prio: String) -> Result<(), String> {
-    if Priority::variants().contains(&&*prio) {
+    static PRIORITIES : [&str; 3]= ["high", "mid", "low"];
+    if PRIORITIES.contains(&&*prio) {
         Ok(())
     } else {
-        Err(format!("Valid options are {:?}", Priority::variants()))
+        Err(format!("Valid options are {:?}", PRIORITIES))
     }
 }
 
@@ -28,16 +22,5 @@ pub fn valid_date(date: String) -> Result<(), String> {
         Err(String::from(
             "Valid options are formatted as such: dd-mm-yyyy",
         ))
-    }
-}
-
-arg_enum! {
-    #[allow(non_camel_case_types)]
-    #[derive(PartialEq)]
-    pub enum Recurrence {
-        daily,
-        weekly,
-        monthly,
-        yearly,
     }
 }

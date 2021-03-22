@@ -16,12 +16,18 @@ pub mod commands {
 }
 
 pub fn add(sub_args: &ArgMatches<'_>) -> Result<()> {
+    //Construct a To-Do based on the arguments passed
     let todo = {
+
+        // Unwrap is safe because clap enforces that this
+        // argument is present
         let desc = sub_args
             .value_of("todo")
-            .expect("What. This one is required, so something broke.")
+            .unwrap()
             .to_string();
 
+        // Doesn't allow for passing the time of an item yet
+        // this is subject to change. Default value is current day
         let start = sub_args.value_of("start").map_or_else(
             || Local::now().naive_local(),
             |date| {
@@ -71,7 +77,7 @@ pub fn delete(sub_args: &ArgMatches<'_>) -> Result<()> {
         .value_of("id")
         .with_context(|| "DEL_ID was not provided")?
         .parse::<usize>()
-        .with_context(|| "Unable to parse DEL_ID")?;
+        .with_context( || "Unable to parse DEL_ID")?;
 
     if db.delete(id) {
         println!("Item successfully removed from the list!");
@@ -88,9 +94,9 @@ pub fn mark(sub_args: &ArgMatches<'_>) -> Result<()> {
 
     let id = sub_args
         .value_of("id")
-        .with_context(|| "DEL_ID was not provided")?
+        .with_context( || "ID was not provided")?
         .parse::<usize>()
-        .with_context(|| "Unable to parse DEL_ID")?;
+        .with_context( ||"Unable to parse ID")?;
 
     if db.mark_complete(id) {
         println!("Item successfully marked!");
@@ -119,7 +125,7 @@ pub fn list(sub_args: &ArgMatches<'_>) -> Result<()> {
     let req_pend = sub_args.is_present("is_pend");
 
     let mut table = get_list_table();
-    let mut hit = false;
+    let mut at_least_one = false;
 
     for (id, todo) in todos.iter().enumerate() {
         if let Some(filter_list) = filters.as_ref() {
@@ -132,7 +138,7 @@ pub fn list(sub_args: &ArgMatches<'_>) -> Result<()> {
             continue;
         }
 
-        hit = true;
+        at_least_one = true;
 
         let id: String = id.to_string();
         let status = todo.status.as_symbol();
@@ -143,12 +149,12 @@ pub fn list(sub_args: &ArgMatches<'_>) -> Result<()> {
             .map_or(String::from("None"), |p| p.to_string());
         let due_date = todo
             .due
-            .map_or_else(|| String::from("None"), |d| d.date().to_string());
+            .map_or_else( || String::from("None"), |d| d.date().to_string());
 
         table.add_row(row![c->id, c->status, l->todo.desc, c->start, c->priority, c->due_date,]);
     }
 
-    if hit {
+    if at_least_one {
         println!();
         table.printstd();
         println!();

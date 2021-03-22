@@ -26,18 +26,6 @@ impl From<Vec<ToDo>> for ToDoList {
     }
 }
 
-// What makes a to-do:
-// Req:
-// - Description    -> String
-// - Start Date     -> DateTime<Local>
-// - Status         -> StatusEnum
-// Optional:        -> Option<X>
-// - Tags               -> Vec<String>
-// - Due Date           -> DateTime<Local>
-// - Priority           -> PriorityEnum
-// - Recur              -> String
-//   - Requires "until" -> DateTime<Local>
-
 #[derive(PartialEq, Serialize, Deserialize)]
 pub struct ToDo {
     // Optional
