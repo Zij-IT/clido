@@ -19,7 +19,7 @@ pub fn add(sub_args: &ArgMatches<'_>) -> Result<()> {
     //Construct a To-Do based on the arguments passed
     let todo = {
 
-        // Unwrap is safe because clap enforces that this
+        // Safety: Unwrap is safe because clap enforces that this
         // argument is present
         let desc = sub_args
             .value_of("todo")
@@ -31,6 +31,8 @@ pub fn add(sub_args: &ArgMatches<'_>) -> Result<()> {
         let start = sub_args.value_of("start").map_or_else(
             || Local::now().naive_local(),
             |date| {
+                // Safety: Unwrap is safe, because in order for a date to be considered
+                // valid, it had to be verified by being parsed earlier
                 let naive = NaiveDate::parse_from_str(date, "%d-%m-%Y").unwrap();
                 naive.and_hms(0, 0, 0)
             },
@@ -39,6 +41,8 @@ pub fn add(sub_args: &ArgMatches<'_>) -> Result<()> {
         let prio = Priority::try_from(sub_args.value_of("priority")).ok();
 
         let due = sub_args.value_of("due_date").map(|date| {
+            // Safety: Unwrap is safe, because in order for a date to be considered
+            // valid, it had to be verified by being parsed earlier
             let naive = NaiveDate::parse_from_str(date, "%d-%m-%Y").unwrap();
             naive.and_hms(0, 0, 0)
         });
