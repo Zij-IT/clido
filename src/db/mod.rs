@@ -1,29 +1,116 @@
-mod db_file;
-mod todo;
+#![allow(clippy::use_self)]
 
-pub use db_file::DatabaseFile;
-use todo::ToDoList;
-pub use todo::{Priority, Status, ToDo};
+mod todo;
 
 use anyhow::{Context, Result};
 use tempfile::{NamedTempFile, PersistError};
+pub use todo::{Priority, Status, ToDo, ToDoList};
 
 use std::io::{self, Write};
-use std::path::Path;
+use std::marker::PhantomData;
+use std::path::{Path, PathBuf};
 
-pub struct Database<'a> {
+// Typestate :) Thanks u/ponkyol
+pub trait State {}
+pub struct Clean;
+pub struct Dirty;
+impl State for Clean {}
+impl State for Dirty {}
+
+pub struct Database<S: State> {
     todos: ToDoList,
-    data_dir: &'a Path,
-    dirty: bool,
+    data_dir: PathBuf,
+    status: PhantomData<S>,
 }
 
-impl Database<'_> {
-    pub fn save(&mut self) -> Result<()> {
-        if !self.dirty {
-            return Ok(());
+impl<S: State> Database<S> {
+    pub fn add(mut self, todo: ToDo) -> Database<Dirty> {
+        self.todos.push(todo);
+        println!("Successfully added the item.");
+
+        Database::<Dirty> {
+            todos: self.todos,
+            data_dir: self.data_dir,
+            status: PhantomData::default(),
+        }
+    }
+
+    pub fn delete(mut self, id: usize) -> Database<Dirty> {
+        if let Some(idx) = self.todos.iter().enumerate().position(|(i, _todo)| i == id) {
+            self.todos.swap_remove(idx);
+            println!("Successfully removed the item");
         }
 
-        // Create temp file
+        Database::<Dirty> {
+            todos: self.todos,
+            data_dir: self.data_dir,
+            status: PhantomData::default(),
+        }
+    }
+
+    pub fn mark_complete(mut self, id: usize) -> Database<Dirty> {
+        if let Some((_, todo)) = self
+            .todos
+            .iter_mut()
+            .enumerate()
+            .find(|(i, _todo)| *i == id)
+        {
+            todo.status = Status::Complete;
+            println!("Successfully marked the item complete.");
+        }
+
+        Database::<Dirty> {
+            todos: self.todos,
+            data_dir: self.data_dir,
+            status: PhantomData::default(),
+        }
+    }
+
+    pub fn todos(&self) -> &ToDoList {
+        &self.todos
+    }
+}
+
+impl Database<Clean> {
+    pub fn from_path<P: Into<PathBuf>>(data_dir: P) -> Result<Self> {
+        let data_dir = data_dir.into();
+        let path = list_path(&data_dir);
+        match std::fs::read(&path) {
+            Ok(buffer) => {
+                let todos = bincode::deserialize(&buffer).with_context(|| {
+                    format!("Could not deserialize todo-list: {}", path.display())
+                })?;
+
+                Ok(Self {
+                    todos,
+                    data_dir,
+                    status: PhantomData::default(),
+                })
+            }
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+                std::fs::create_dir_all(&data_dir).expect("Unable to create dir");
+
+                Ok(Self {
+                    todos: Vec::new().into(),
+                    data_dir,
+                    status: PhantomData::default(),
+                })
+            }
+            Err(e) => {
+                Err(e).with_context(|| format!("could not read from database: {}", path.display()))
+            }
+        }
+    }
+}
+
+impl Database<Dirty> {
+    pub fn save(&self) {
+        if let Err(e) = self.save_to_file() {
+            let _ = writeln!(io::stderr(), "Clido: {:?}", e);
+        }
+    }
+
+    fn save_to_file(&self) -> Result<()> {
         let mut file = NamedTempFile::new_in(&self.data_dir).with_context(|| {
             format!(
                 "Could not create temp. database in: {}",
@@ -45,50 +132,7 @@ impl Database<'_> {
         persist(file, &path)
             .with_context(|| format!("Couldn't replace temp database: {}", path.display(),))?;
 
-        self.dirty = false;
         Ok(())
-    }
-
-    pub fn add(&mut self, to_add: ToDo) {
-        if self.todos.iter_mut().find(|todo| **todo == to_add) == None {
-            self.todos.push(to_add);
-            self.dirty = true;
-        }
-    }
-
-    pub fn delete(&mut self, id: usize) -> bool {
-        if let Some(idx) = self.todos.iter().enumerate().position(|(i, _todo)| i == id) {
-            self.todos.swap_remove(idx);
-            self.dirty = true;
-            return true;
-        }
-        false
-    }
-
-    pub fn mark_complete(&mut self, id: usize) -> bool {
-        if let Some((_, todo)) = self
-            .todos
-            .iter_mut()
-            .enumerate()
-            .find(|(i, _todo)| *i == id)
-        {
-            todo.status = Status::Complete;
-            self.dirty = true;
-            return true;
-        }
-        false
-    }
-
-    pub const fn todos(&self) -> &ToDoList {
-        &self.todos
-    }
-}
-
-impl Drop for Database<'_> {
-    fn drop(&mut self) {
-        if let Err(e) = self.save() {
-            let _ = writeln!(io::stderr(), "Clido: {:?}", e);
-        }
     }
 }
 

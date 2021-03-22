@@ -1,4 +1,4 @@
-use super::db::{DatabaseFile, Priority, Status, ToDo};
+use super::db::{Database, Priority, Status, ToDo};
 use super::util::clido_dir;
 
 use anyhow::{Context, Result};
@@ -18,13 +18,9 @@ pub mod commands {
 pub fn add(sub_args: &ArgMatches<'_>) -> Result<()> {
     //Construct a To-Do based on the arguments passed
     let todo = {
-
         // Safety: Unwrap is safe because clap enforces that this
         // argument is present
-        let desc = sub_args
-            .value_of("todo")
-            .unwrap()
-            .to_string();
+        let desc = sub_args.value_of("todo").unwrap().to_string();
 
         // Doesn't allow for passing the time of an item yet
         // this is subject to change. Default value is current day
@@ -62,58 +58,37 @@ pub fn add(sub_args: &ArgMatches<'_>) -> Result<()> {
         }
     };
 
-    // TodoListFile still needs to be in scope for the database to function,
-    // so I am shadowing the variable to make sure that it is impossible to
-    // drop the database file first.
-    let mut db = DatabaseFile::new(clido_dir()?);
-    let mut db = db.open()?;
-    db.add(todo);
+    Database::from_path(clido_dir()?)?.add(todo).save();
 
-    println!("Item successfully added to the list!");
     Ok(())
 }
 
 pub fn delete(sub_args: &ArgMatches<'_>) -> Result<()> {
-    let mut db = DatabaseFile::new(clido_dir()?);
-    let mut db = db.open()?;
-
     let id = sub_args
         .value_of("id")
         .with_context(|| "DEL_ID was not provided")?
         .parse::<usize>()
-        .with_context( || "Unable to parse DEL_ID")?;
+        .with_context(|| "Unable to parse DEL_ID")?;
 
-    if db.delete(id) {
-        println!("Item successfully removed from the list!");
-    } else {
-        println!("The ID {} was not an ID for a ToDo", id);
-    }
+    Database::from_path(clido_dir()?)?.delete(id).save();
 
     Ok(())
 }
 
 pub fn mark(sub_args: &ArgMatches<'_>) -> Result<()> {
-    let mut db = DatabaseFile::new(clido_dir()?);
-    let mut db = db.open()?;
-
     let id = sub_args
         .value_of("id")
-        .with_context( || "ID was not provided")?
+        .with_context(|| "ID was not provided")?
         .parse::<usize>()
-        .with_context( ||"Unable to parse ID")?;
+        .with_context(|| "Unable to parse ID")?;
 
-    if db.mark_complete(id) {
-        println!("Item successfully marked!");
-    } else {
-        println!("The ID {} was not an ID for a ToDo", id);
-    }
+    Database::from_path(clido_dir()?)?.mark_complete(id).save();
 
     Ok(())
 }
 
 pub fn list(sub_args: &ArgMatches<'_>) -> Result<()> {
-    let mut db = DatabaseFile::new(clido_dir()?);
-    let db = db.open()?;
+    let db = Database::from_path(clido_dir()?)?;
     let todos = db.todos();
 
     if todos.len() == 0 {
@@ -138,7 +113,9 @@ pub fn list(sub_args: &ArgMatches<'_>) -> Result<()> {
             }
         }
 
-        if (req_comp && todo.status != Status::Complete) || (req_pend && todo.status != Status::Pending) {
+        if (req_comp && todo.status != Status::Complete)
+            || (req_pend && todo.status != Status::Pending)
+        {
             continue;
         }
 
@@ -153,7 +130,7 @@ pub fn list(sub_args: &ArgMatches<'_>) -> Result<()> {
             .map_or(String::from("None"), |p| p.to_string());
         let due_date = todo
             .due
-            .map_or_else( || String::from("None"), |d| d.date().to_string());
+            .map_or_else(|| String::from("None"), |d| d.date().to_string());
 
         table.add_row(row![c->id, c->status, l->todo.desc, c->start, c->priority, c->due_date,]);
     }

@@ -6,7 +6,7 @@ use chrono::NaiveDate;
 
 #[allow(clippy::needless_pass_by_value)]
 pub fn valid_priority(prio: String) -> Result<(), String> {
-    static PRIORITIES : [&str; 3]= ["high", "mid", "low"];
+    static PRIORITIES: [&str; 3] = ["high", "mid", "low"];
     if PRIORITIES.contains(&&*prio) {
         Ok(())
     } else {
