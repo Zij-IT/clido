@@ -31,11 +31,11 @@ fn main() -> Result<()> {
         (@subcommand add =>
             (about: "Adds an item to your todo list")
             (@setting ColoredHelp)
+            (@arg todo: <INPUT> "Item to be added.")
             (@arg priority: -p --priority [PRIO] {valid_priority} "Sets the priority of the item")
             (@arg start: -s --start [START] {valid_date} "Sets the start date of the item. Format: dd-mm-yyyy")
             (@arg due_date: -d --due [DUE] {valid_date} "Sets the due date of the item. Format: dd-mm-yyyy")
-            (@arg tags: -t --tags [TAGS] min_values(1) "Adds the provided tags to the item")
-            (@arg todo: <INPUT> "Item to be added.")
+            (@arg tags: -t --tags [TAGS] +require_delimiter min_values(1) "Adds the provided tags to the item")
         )
         (@subcommand del =>
             (about: "Deletes an item from your todo-list")
