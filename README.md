@@ -5,7 +5,7 @@ A tool for creating and maintaining a todo-list on the command line
  - [Introduction](#introduction)
  - [Examples](#examples)
  - [Installation and Usage](#installation-and-usage)
- - [Enviroment Variables](#enviroment-variables)
+ - [Environment Variables](#environment-variables)
  - [ToDo](#todo)
  - [Acknowledgements](#acknowledgements)
  
@@ -31,25 +31,37 @@ I decided to write a Rust alternative to the well known [Task Warrior](https://t
 ## Installation and Usage
 
 ### Installation
-Currently the only way to install clido is using cargo:
+Currently, the only way to install clido is using cargo:
  - `cargo install clido` 
 
 ### Usage
 
 Clido's commands follow the following format:
 
-`clido [Subcommand] [Flags] [Input]`
+`clido [Subcommand] [Flags] [Options] [Input]`
 
 clido has the following functionalities:
 
-| Goal                        | Command    | Options                                    | Input                                                   |
-|-----------------------------|------------|--------------------------------------------|---------------------------------------------------------|
-| Add an item                 | clido add  | -s  --start<br>-d  --due<br>-p  --priority | "Put the task you want here"                            |
-| Delete an item              | clido del  |                                            | The ID number of the task you<br>want to delete.        |
-| Mark an item as<br>complete | clido mark |                                            | The ID number of the task you<br>want to mark complete. |
-| List items                  | clido list | -f --filter<br>-c --complete<br>-p --priority | Filters that an item must have<br>to be shown           |  
+| Goal                        | Command    | Options                                                | Input                                                             |
+|-----------------------------|------------|--------------------------------------------------------|-------------------------------------------------------------------|
+| Add an item                 | clido add  | -s  --start<br>-d  --due<br>-p  --priority<br>-t --tags| "Put the task you want here"                                      |
+| Delete an item              | clido del  |                                                        | The ID number of the task you<br>want to delete.                  |
+| Mark an item as<br>complete | clido mark |                                                        | The ID number of the task you<br>want to mark complete.           |
+| List items                  | clido list | -f --filter<br>-c --complete<br>-p --pending           | Filters that an item must have<br>to be shown                     |  
 
-## Enviroment Variables
+### Formatting Rules
+
+Dates (--start / --due) can be input in the following ways:
+ * DD-MM-YYYY
+ * Long name of day (e.g. Monday, Tuesday, ... )
+ * Abbreviation of the day (e.g. Mon, Tue, ...)
+
+Tags (--tags) *must* be separated by a comma if using multiple tags. Examples:
+ * `clido add -t school,math,homework "Page 45. Logarithms 10-23"`
+ * `clido add -t home,chores,dishes "Run the dishwasher"` 
+ * `clido add -t no-tag`
+
+## Environment Variables
 - `_CLIDO_DIR`
   - Specifies the directory in which clido should store its database.
   - The default value varies across OSes:
@@ -64,7 +76,7 @@ clido has the following functionalities:
 Clido is still lacking many of the features I would like, such as:
 - [x] Groups (tags)
 - [x] Filters
-- [ ] Named Dates
+- [x] Named Dates
 - [x] End Dates (via date)
 - [ ] Recurring Tasks (Marks self as pending every specified interval)
 - [x] Colors
@@ -72,7 +84,7 @@ Clido is still lacking many of the features I would like, such as:
 - [ ] Interactive marking / deleting using fzf
 - [ ] Configurable output
 
-I plan to be adding these in over time, although I can't promise any dates. Feel free to leave suggestions
+I plan to be adding these in as I go, although I can't promise any dates. Feel free to leave suggestions
   for any other features that you would like to see on the list.
   
 ## Acknowledgements

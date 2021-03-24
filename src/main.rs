@@ -10,13 +10,13 @@
 extern crate prettytable;
 
 mod args;
-mod cmd;
+mod commands;
 mod db;
 mod util;
 
-use cmd::commands;
+use args::{valid_date, valid_priority};
+use commands::command_strs;
 
-use crate::args::{valid_date, valid_priority};
 use anyhow::Result;
 use clap::{clap_app, crate_authors, crate_description, crate_version};
 
@@ -31,11 +31,11 @@ fn main() -> Result<()> {
         (@subcommand add =>
             (about: "Adds an item to your todo list")
             (@setting ColoredHelp)
-            (@arg todo: <INPUT> "Item to be added.")
             (@arg priority: -p --priority [PRIO] {valid_priority} "Sets the priority of the item")
             (@arg start: -s --start [START] {valid_date} "Sets the start date of the item. Format: dd-mm-yyyy")
             (@arg due_date: -d --due [DUE] {valid_date} "Sets the due date of the item. Format: dd-mm-yyyy")
             (@arg tags: -t --tags [TAGS] +require_delimiter min_values(1) "Adds the provided tags to the item")
+            (@arg todo: <INPUT> "Item to be added.")
         )
         (@subcommand del =>
             (about: "Deletes an item from your todo-list")
@@ -58,10 +58,10 @@ fn main() -> Result<()> {
     .get_matches();
 
     match matches.subcommand() {
-        (commands::ADD, Some(matches)) => cmd::add(matches),
-        (commands::DEL, Some(matches)) => cmd::delete(matches),
-        (commands::MARK, Some(matches)) => cmd::mark(matches),
-        (commands::LIST, Some(matches)) => cmd::list(matches),
+        (command_strs::ADD, Some(matches)) => commands::add(matches),
+        (command_strs::DEL, Some(matches)) => commands::del(matches),
+        (command_strs::MARK, Some(matches)) => commands::mark(matches),
+        (command_strs::LIST, Some(matches)) => commands::list(matches),
         _ => Ok(()),
     }
 }
