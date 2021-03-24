@@ -1,6 +1,6 @@
 [package]
 name = "clido"
-version = "0.1.2"
+version = "0.2.0"
 authors = ["Elijah Hartvigsen <elijah.reed@hartvigsen.xyz>"]
 edition = "2018"
 license = "MIT OR Apache-2.0"
