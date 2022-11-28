@@ -37,7 +37,7 @@ impl<S: State> Database<S> {
 
     pub fn delete(mut self, id: usize) -> Database<Dirty> {
         if let Some(idx) = self.todos.iter().enumerate().position(|(i, _todo)| i == id) {
-            self.todos.swap_remove(idx);
+            self.todos.remove(idx);
             println!("Successfully removed the item");
         }
 
