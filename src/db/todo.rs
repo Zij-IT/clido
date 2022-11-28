@@ -77,7 +77,7 @@ impl TryFrom<Option<&str>> for Priority {
     fn try_from(string: Option<&str>) -> Result<Self, Self::Error> {
         match string {
             Some("high") => Ok(Self::High),
-            Some("medium") => Ok(Self::Medium),
+            Some("mid") => Ok(Self::Medium),
             Some("low") => Ok(Self::Low),
             _ => Err(()),
         }
