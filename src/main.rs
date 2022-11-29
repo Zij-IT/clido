@@ -5,6 +5,7 @@ extern crate prettytable;
 
 mod commands;
 mod db;
+mod todo;
 mod util;
 
 use anyhow::Result;

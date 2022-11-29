@@ -12,7 +12,7 @@ pub struct Add {
     todo: String,
 
     #[arg(value_name = "PRIORITY")]
-    priority: Option<String>,
+    priority: Option<Priority>,
 
     #[arg(value_name = "START_DATE")]
     start_date: Option<String>,
@@ -35,7 +35,7 @@ pub fn add(command: &Add) -> Result<()> {
 
         let due = command.due_date.as_deref().map(date_from_input);
 
-        let prio = Priority::try_from(command.priority.as_deref()).ok();
+        let prio = command.priority;
 
         let tags = command.tags.as_ref().map_or(Vec::new(), Clone::clone);
 

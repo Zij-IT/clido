@@ -1,10 +1,8 @@
 #![allow(clippy::use_self)]
 
-mod todo;
-
+pub use super::todo::{Priority, Status, ToDo, ToDoList};
 use anyhow::{Context, Result};
 use tempfile::{NamedTempFile, PersistError};
-pub use todo::{Priority, Status, ToDo, ToDoList};
 
 use std::io::{self, Write};
 use std::marker::PhantomData;

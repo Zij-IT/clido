@@ -1,4 +1,5 @@
 use chrono::NaiveDateTime;
+use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 use std::ops::{Deref, DerefMut};
@@ -55,9 +56,11 @@ impl Status {
     }
 }
 
-#[derive(PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone, Copy, ValueEnum)]
 pub enum Priority {
     Low,
+    #[value(alias("mid"))]
+    #[value(alias("med"))]
     Medium,
     High,
 }
@@ -69,18 +72,6 @@ impl ToString for Priority {
             Self::Medium => "Medium",
             Self::High => "High",
         })
-    }
-}
-
-impl TryFrom<Option<&str>> for Priority {
-    type Error = ();
-    fn try_from(string: Option<&str>) -> Result<Self, Self::Error> {
-        match string {
-            Some("high") => Ok(Self::High),
-            Some("mid") => Ok(Self::Medium),
-            Some("low") => Ok(Self::Low),
-            _ => Err(()),
-        }
     }
 }
 
