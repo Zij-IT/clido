@@ -1,7 +1,6 @@
 use chrono::NaiveDateTime;
 use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
-use std::convert::TryFrom;
 use std::ops::{Deref, DerefMut};
 
 #[derive(Serialize, Deserialize)]
@@ -27,7 +26,7 @@ impl From<Vec<ToDo>> for ToDoList {
     }
 }
 
-#[derive(PartialEq, Serialize, Deserialize)]
+#[derive(PartialEq, Eq, Serialize, Deserialize)]
 pub struct ToDo {
     // Optional
     pub recur: Option<Recurrence>,
@@ -41,7 +40,7 @@ pub struct ToDo {
     pub tags: Vec<String>, // Allowed to be empty
 }
 
-#[derive(PartialEq, Serialize, Deserialize)]
+#[derive(PartialEq, Eq, Serialize, Deserialize)]
 pub enum Status {
     Complete,
     Pending,
@@ -56,7 +55,7 @@ impl Status {
     }
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, Clone, Copy, ValueEnum)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, Copy, ValueEnum)]
 pub enum Priority {
     Low,
     #[value(alias("mid"))]
@@ -75,7 +74,7 @@ impl ToString for Priority {
     }
 }
 
-#[derive(PartialEq, Serialize, Deserialize)]
+#[derive(PartialEq, Eq, Serialize, Deserialize)]
 pub enum Recurrence {
     Daily(NaiveDateTime),
     Weekly(NaiveDateTime),

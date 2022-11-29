@@ -1,7 +1,6 @@
 use super::{clido_dir, Database, Local, NaiveDate, Priority, Result, Status, ToDo};
 use chrono::{Datelike, NaiveDateTime};
 use clap::Args;
-use std::convert::TryFrom;
 
 const SHORT_DAYS: [&str; 7] = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 
@@ -61,7 +60,7 @@ fn date_from_input(date: &str) -> NaiveDateTime {
         day_to_date(&now, date).unwrap_or(now)
     } else {
         let naive = NaiveDate::parse_from_str(date, "%d-%m-%Y").unwrap();
-        naive.and_hms(0, 0, 0)
+        naive.and_time(Local::now().naive_local().time())
     }
 }
 
@@ -71,5 +70,5 @@ fn day_to_date(curr_date: &NaiveDateTime, desired_date: &str) -> Option<NaiveDat
         .date()
         .iter_days()
         .find(|x| SHORT_DAYS[x.weekday() as usize] == goal)
-        .map(|x| x.and_hms(0, 0, 0))
+        .map(|x| x.and_time(Local::now().naive_local().time()))
 }
