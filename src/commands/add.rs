@@ -5,21 +5,45 @@ use clap::Args;
 const SHORT_DAYS: [&str; 7] = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 
 #[derive(Debug, Args)]
-#[command(arg_required_else_help = true)]
+#[command(
+    arg_required_else_help = true,
+    about = "Adds an item to your todo list"
+)]
 pub struct Add {
     #[arg(value_name = "TODO", required = true)]
     todo: String,
 
-    #[arg(short = 'p', long = "priority", value_name = "PRIORITY")]
+    #[arg(
+        short = 'p',
+        long = "priority",
+        value_name = "PRIORITY",
+        help = "Sets the priority of the task"
+    )]
     priority: Option<Priority>,
 
-    #[arg(short = 's', long = "start", value_name = "START_DATE")]
+    #[arg(
+        short = 's',
+        long = "start",
+        value_name = "START_DATE",
+        help = "Sets the start date for the task. Format: dd-mm-yyyy"
+    )]
     start_date: Option<String>,
 
-    #[arg(short = 'd', long = "due", value_name = "DUE_DATE")]
+    #[arg(
+        short = 'd',
+        long = "due",
+        value_name = "DUE_DATE",
+        help = "Sets the due date for the task. Format: dd-mm-yyyy"
+    )]
     due_date: Option<String>,
 
-    #[arg(short = 't', long = "tags", value_name = "TAGS", value_delimiter = ',')]
+    #[arg(
+        short = 't',
+        long = "tags",
+        value_name = "TAGS",
+        value_delimiter = ',',
+        help = "Sets tags for the task which are later used to filter tasks"
+    )]
     tags: Option<Vec<String>>,
 }
 

@@ -3,14 +3,20 @@ use clap::Args;
 use super::{clido_dir, format, Database, Result, Status, Table};
 
 #[derive(Debug, Args)]
+#[command(about = "Displays all items in the todo list")]
 pub struct List {
-    #[arg(short = 'p', long = "pending")]
+    #[arg(short = 'p', long = "pending", help = "Only show pending tasks")]
     show_pending: bool,
 
-    #[arg(short = 'c', long = "complete")]
+    #[arg(short = 'c', long = "complete", help = "Only show completed tasks")]
     show_complete: bool,
 
-    #[arg(long = "filter", value_name = "TAGS", value_delimiter = ',')]
+    #[arg(
+        long = "filter",
+        value_name = "TAGS",
+        value_delimiter = ',',
+        help = "Filters list to only show tasks which have at least one of the provided tags"
+    )]
     filter_tags: Option<Vec<String>>,
 }
 

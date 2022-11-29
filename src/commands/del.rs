@@ -3,9 +3,17 @@ use clap::Args;
 use super::{clido_dir, Database, Result};
 
 #[derive(Debug, Args)]
-#[command(arg_required_else_help = true, alias = "del")]
+#[command(
+    arg_required_else_help = true,
+    alias = "del",
+    about = "Deletes a task from the list"
+)]
 pub struct Delete {
-    #[arg(value_name = "ID", required = true)]
+    #[arg(
+        value_name = "ID",
+        required = true,
+        help = "ID of the task to be deleted"
+    )]
     todo_id: usize,
 }
 
