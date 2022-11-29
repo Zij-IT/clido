@@ -36,14 +36,15 @@ pub fn list(sub_args: &ArgMatches<'_>) -> Result<()> {
 
         let id: String = id.to_string();
         let status = todo.status.as_symbol();
-        let start = todo.start.date().to_string();
+        let start = todo.start.date().format("%d-%m-%Y").to_string();
         let priority = todo
             .prio
             .as_ref()
             .map_or(String::from("None"), |p| p.to_string());
-        let due_date = todo
-            .due
-            .map_or_else(|| String::from("None"), |d| d.date().to_string());
+        let due_date = todo.due.map_or_else(
+            || String::from("None"),
+            |d| d.date().format("%d-%m-%Y").to_string(),
+        );
 
         table.add_row(row![c->id, c->status, l->todo.desc, c->start, c->priority, c->due_date,]);
     }
