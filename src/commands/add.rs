@@ -24,29 +24,27 @@ pub struct Add {
 }
 
 pub fn add(command: &Add) -> Result<()> {
-    let todo = {
-        let desc = command.todo.clone();
+    let desc = command.todo.clone();
 
-        let start: NaiveDateTime = command
-            .start_date
-            .as_deref()
-            .map_or_else(|| Local::now().naive_local(), date_from_input);
+    let start: NaiveDateTime = command
+        .start_date
+        .as_deref()
+        .map_or_else(|| Local::now().naive_local(), date_from_input);
 
-        let due = command.due_date.as_deref().map(date_from_input);
+    let due = command.due_date.as_deref().map(date_from_input);
 
-        let prio = command.priority;
+    let prio = command.priority;
 
-        let tags = command.tags.as_ref().map_or(Vec::new(), Clone::clone);
+    let tags = command.tags.as_ref().map_or(Vec::new(), Clone::clone);
 
-        ToDo {
-            desc,
-            start,
-            prio,
-            due,
-            tags,
-            recur: None,
-            status: Status::Pending,
-        }
+    let todo = ToDo {
+        desc,
+        start,
+        prio,
+        due,
+        tags,
+        recur: None,
+        status: Status::Pending,
     };
 
     Database::from_path(clido_dir()?)?.add(todo).save();
