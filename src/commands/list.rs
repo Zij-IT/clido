@@ -4,39 +4,24 @@ pub fn list(sub_args: &ArgMatches<'_>) -> Result<()> {
     let db = Database::from_path(clido_dir()?)?;
     let todos = db.todos();
 
-    if todos.len() == 0 {
-        println!("\nThere were no To-Dos to print! Good job!\n");
-        return Ok(());
-    }
-
+    let req_comp = sub_args.is_present("is_comp");
+    let req_pend = sub_args.is_present("is_pend");
     let required_tags = sub_args
         .values_of("filter")
         .map(|args| args.into_iter().map(str::to_string).collect::<Vec<_>>());
 
-    let req_comp = sub_args.is_present("is_comp");
-    let req_pend = sub_args.is_present("is_pend");
+    let todos = todos.iter().enumerate().filter(|(_, todo)| {
+        (req_comp && todo.status != Status::Complete)
+            || (req_pend && todo.status != Status::Pending)
+            || match required_tags.as_ref() {
+                Some(tags) => tags.iter().any(|tag| todo.tags.contains(tag)),
+                None => false,
+            }
+    });
 
     let mut table = get_list_table();
-    let mut at_least_one = false;
 
-    for (id, todo) in todos.iter().enumerate() {
-        if let Some(required_tags) = required_tags.as_ref() {
-            if !required_tags
-                .iter()
-                .any(|filter| todo.tags.contains(filter))
-            {
-                continue;
-            }
-        }
-
-        if (req_comp && todo.status != Status::Complete)
-            || (req_pend && todo.status != Status::Pending)
-        {
-            continue;
-        }
-
-        at_least_one = true;
-
+    for (id, todo) in todos {
         let id: String = id.to_string();
         let status = todo.status.as_symbol();
         let start = todo.start.date().format("%d-%m-%Y").to_string();
@@ -52,12 +37,12 @@ pub fn list(sub_args: &ArgMatches<'_>) -> Result<()> {
         table.add_row(row![c->id, c->status, l->todo.desc, c->start, c->priority, c->due_date,]);
     }
 
-    if at_least_one {
+    if table.is_empty() {
+        println!("\nThere were no To-Dos to matching those filters!\n");
+    } else {
         println!();
         table.printstd();
         println!();
-    } else {
-        println!("\nThere were no To-Dos to matching those filters!\n");
     }
 
     Ok(())
