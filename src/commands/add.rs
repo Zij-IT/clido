@@ -26,10 +26,7 @@ pub struct Add {
 }
 
 pub fn add(command: &Add) -> Result<()> {
-    //Construct a To-Do based on the arguments passed
     let todo = {
-        // Safety: Unwrap is safe because clap enforces that this
-        // argument is present
         let desc = command.todo.clone();
 
         let start: NaiveDateTime = command
