@@ -11,16 +11,16 @@ pub struct Add {
     #[arg(value_name = "TODO", required = true)]
     todo: String,
 
-    #[arg(value_name = "PRIORITY")]
+    #[arg(short = 'p', long = "priority", value_name = "PRIORITY")]
     priority: Option<Priority>,
 
-    #[arg(value_name = "START_DATE")]
+    #[arg(short = 's', long = "start", value_name = "START_DATE")]
     start_date: Option<String>,
 
-    #[arg(value_name = "DUE_DATE")]
+    #[arg(short = 'd', long = "due", value_name = "DUE_DATE")]
     due_date: Option<String>,
 
-    #[arg(value_name = "TAGS")]
+    #[arg(short = 't', long = "tags", value_name = "TAGS")]
     tags: Option<Vec<String>>,
 }
 
