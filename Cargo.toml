@@ -12,14 +12,14 @@ keywords = ["cli", "todo", "todo-list"]
 categories = ["command-line-utilities"]
 
 [dependencies]
-serde = {version = "1.0.117", features = ["derive"]}
-chrono = {version = "0.4.19", features = ["serde"]}
-clap = { version = "2.33.3", features = ["color"] }
-bincode = "1.3.2"
-tempfile = "3.1.0"
+serde = {version = "1.0.148", features = ["derive"]}
+chrono = {version = "0.4.23", features = ["serde"]}
+clap = { version = "4.0.29", features = ["color", "derive"] }
+bincode = "1.3.3"
+tempfile = "3.3.0"
 dirs-next = "2.0.0"
-anyhow = "1.0.38"
-prettytable-rs = "0.8.0"
+anyhow = "1.0.66"
+prettytable-rs = "0.9.0"
 
 [profile.release]
 lto = true

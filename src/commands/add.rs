@@ -3,25 +3,48 @@ use super::{
     Status, ToDo,
 };
 use chrono::{Datelike, NaiveDateTime};
-use std::convert::TryFrom;
+use clap::Args;
+use std::{convert::TryFrom, ffi::OsString};
 
-pub fn add(sub_args: &ArgMatches<'_>) -> Result<()> {
+#[derive(Debug, Args)]
+#[command(arg_required_else_help = true)]
+pub struct Add {
+    #[arg(value_name = "TODO", required = true)]
+    todo: String,
+
+    #[arg(value_name = "PRIORITY")]
+    priority: Option<String>,
+
+    #[arg(value_name = "PRIORITY")]
+    start_date: Option<String>,
+
+    #[arg(value_name = "PRIORITY")]
+    due_date: Option<String>,
+
+    #[arg(value_name = "PRIORITY")]
+    tags: Option<Vec<String>>,
+}
+
+pub fn add(command: &Add) -> Result<()> {
     //Construct a To-Do based on the arguments passed
     let todo = {
         // Safety: Unwrap is safe because clap enforces that this
         // argument is present
-        let desc = sub_args.value_of("todo").unwrap().to_string();
+        let desc = command.todo.clone();
 
-        let start: NaiveDateTime = sub_args
-            .value_of("start")
+        let start: NaiveDateTime = command
+            .start_date
+            .as_deref()
             .map_or_else(|| Local::now().naive_local(), date_from_input);
-        let due = sub_args.value_of("due_date").map(date_from_input);
 
-        let prio = Priority::try_from(sub_args.value_of("priority")).ok();
+        let due = command.due_date.as_deref().map(date_from_input);
 
-        let tags = sub_args
-            .values_of("tags")
-            .map_or(Vec::new(), |tags| tags.map(str::to_string).collect());
+        let prio = Priority::try_from(command.priority.as_deref()).ok();
+
+        let tags = command
+            .tags
+            .as_ref()
+            .map_or(Vec::new(), |tags| tags.clone());
 
         ToDo {
             desc,

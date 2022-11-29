@@ -1,13 +1,18 @@
+use clap::Args;
+
 use super::{clido_dir, ArgMatches, Context, Database, Result};
 
-pub fn del(sub_args: &ArgMatches<'_>) -> Result<()> {
-    let id = sub_args
-        .value_of("id")
-        .with_context(|| "DEL_ID was not provided")?
-        .parse::<usize>()
-        .with_context(|| "Unable to parse DEL_ID")?;
+#[derive(Debug, Args)]
+#[command(arg_required_else_help = true)]
+pub struct Delete {
+    #[arg(value_name = "ID", required = true)]
+    todo_id: usize,
+}
 
-    Database::from_path(clido_dir()?)?.delete(id).save();
+pub fn del(command: &Delete) -> Result<()> {
+    Database::from_path(clido_dir()?)?
+        .delete(command.todo_id)
+        .save();
 
     Ok(())
 }

@@ -1,21 +1,29 @@
+use clap::Args;
+
 use super::{clido_dir, format, ArgMatches, Database, Result, Status, Table};
 
-pub fn list(sub_args: &ArgMatches<'_>) -> Result<()> {
+#[derive(Debug, Args)]
+pub struct List {
+    #[arg(short = 'p', long = "pending")]
+    show_pending: bool,
+
+    #[arg(short = 'c', long = "complete")]
+    show_complete: bool,
+
+    #[arg(long = "filter", value_name = "TAGS")]
+    filter_tags: Option<Vec<String>>,
+}
+
+pub fn list(command: &List) -> Result<()> {
     let db = Database::from_path(clido_dir()?)?;
     let todos = db.todos();
 
-    let req_comp = sub_args.is_present("is_comp");
-    let req_pend = sub_args.is_present("is_pend");
-    let required_tags = sub_args
-        .values_of("filter")
-        .map(|args| args.into_iter().map(str::to_string).collect::<Vec<_>>());
-
     let todos = todos.iter().enumerate().filter(|(_, todo)| {
-        (req_comp && todo.status != Status::Complete)
-            || (req_pend && todo.status != Status::Pending)
-            || match required_tags.as_ref() {
-                Some(tags) => tags.iter().any(|tag| todo.tags.contains(tag)),
-                None => false,
+        (command.show_complete && todo.status == Status::Complete)
+            || (command.show_pending && todo.status == Status::Pending)
+            || match command.filter_tags.as_ref() {
+                Some(tags) => tags.iter().any(|tag| todo.tags.contains(&tag)),
+                None => !command.show_pending && !command.show_complete,
             }
     });
 

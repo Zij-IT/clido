@@ -1,13 +1,18 @@
+use clap::Args;
+
 use super::{clido_dir, ArgMatches, Context, Database, Result};
 
-pub fn mark(sub_args: &ArgMatches<'_>) -> Result<()> {
-    let id = sub_args
-        .value_of("id")
-        .with_context(|| "ID was not provided")?
-        .parse::<usize>()
-        .with_context(|| "Unable to parse ID")?;
+#[derive(Debug, Args)]
+#[command(arg_required_else_help = true)]
+pub struct Mark {
+    #[arg(value_name = "ID", required = true)]
+    todo_id: usize,
+}
 
-    Database::from_path(clido_dir()?)?.mark_complete(id).save();
+pub fn mark(command: &Mark) -> Result<()> {
+    Database::from_path(clido_dir()?)?
+        .mark_complete(command.todo_id)
+        .save();
 
     Ok(())
 }
