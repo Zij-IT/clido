@@ -1,10 +1,9 @@
-use super::{
-    super::args::SHORT_DAYS, clido_dir, ArgMatches, Database, Local, NaiveDate, Priority, Result,
-    Status, ToDo,
-};
+use super::{clido_dir, Database, Local, NaiveDate, Priority, Result, Status, ToDo};
 use chrono::{Datelike, NaiveDateTime};
 use clap::Args;
-use std::{convert::TryFrom, ffi::OsString};
+use std::convert::TryFrom;
+
+const SHORT_DAYS: [&str; 7] = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 
 #[derive(Debug, Args)]
 #[command(arg_required_else_help = true)]
@@ -38,10 +37,7 @@ pub fn add(command: &Add) -> Result<()> {
 
         let prio = Priority::try_from(command.priority.as_deref()).ok();
 
-        let tags = command
-            .tags
-            .as_ref()
-            .map_or(Vec::new(), |tags| tags.clone());
+        let tags = command.tags.as_ref().map_or(Vec::new(), Clone::clone);
 
         ToDo {
             desc,

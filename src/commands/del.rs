@@ -1,6 +1,6 @@
 use clap::Args;
 
-use super::{clido_dir, ArgMatches, Context, Database, Result};
+use super::{clido_dir, Database, Result};
 
 #[derive(Debug, Args)]
 #[command(arg_required_else_help = true)]

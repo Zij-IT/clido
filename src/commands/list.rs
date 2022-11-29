@@ -1,6 +1,6 @@
 use clap::Args;
 
-use super::{clido_dir, format, ArgMatches, Database, Result, Status, Table};
+use super::{clido_dir, format, Database, Result, Status, Table};
 
 #[derive(Debug, Args)]
 pub struct List {
@@ -22,7 +22,7 @@ pub fn list(command: &List) -> Result<()> {
         (command.show_complete && todo.status == Status::Complete)
             || (command.show_pending && todo.status == Status::Pending)
             || match command.filter_tags.as_ref() {
-                Some(tags) => tags.iter().any(|tag| todo.tags.contains(&tag)),
+                Some(tags) => tags.iter().any(|tag| todo.tags.contains(tag)),
                 None => !command.show_pending && !command.show_complete,
             }
     });
@@ -36,7 +36,8 @@ pub fn list(command: &List) -> Result<()> {
         let priority = todo
             .prio
             .as_ref()
-            .map_or(String::from("None"), |p| p.to_string());
+            .map_or(String::from("None"), ToString::to_string);
+
         let due_date = todo.due.map_or_else(
             || String::from("None"),
             |d| d.date().format("%d-%m-%Y").to_string(),

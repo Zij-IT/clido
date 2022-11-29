@@ -1,15 +1,8 @@
-#![warn(
-    clippy::perf,
-    clippy::style,
-    clippy::nursery,
-    rust_2018_idioms,
-    clippy::pedantic
-)]
+#![warn(clippy::pedantic)]
 
 #[macro_use]
 extern crate prettytable;
 
-mod args;
 mod commands;
 mod db;
 mod util;
