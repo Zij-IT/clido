@@ -2,7 +2,7 @@ use super::{
     super::args::SHORT_DAYS, clido_dir, ArgMatches, Database, Local, NaiveDate, Priority, Result,
     Status, ToDo,
 };
-use chrono::{Datelike, NaiveDateTime, NaiveTime};
+use chrono::{Datelike, NaiveDateTime};
 use std::convert::TryFrom;
 
 pub fn add(sub_args: &ArgMatches<'_>) -> Result<()> {
@@ -50,21 +50,10 @@ fn date_from_input(date: &str) -> NaiveDateTime {
 }
 
 fn day_to_date(curr_date: &NaiveDateTime, desired_date: &str) -> Option<NaiveDateTime> {
-    // Goal must match one of the &str above,
-    // as the input is checked via Clap
     let goal = &desired_date.to_ascii_lowercase()[..3];
-    debug_assert!(SHORT_DAYS.contains(&goal));
-
-    let mut date = curr_date.date();
-
-    while let Some(next_date) = date.succ_opt() {
-        date = next_date;
-        // Days are mapped such that Monday = 0, .. Sunday = 6
-        if SHORT_DAYS[(date.weekday()) as usize] == goal {
-            return Some(NaiveDateTime::new(date, NaiveTime::from_hms(0, 0, 0)));
-        }
-    }
-
-    println!("Welcome to the end of the year 262143CE.\n This is about where CLIDO stops. Sorry.");
-    None
+    curr_date
+        .date()
+        .iter_days()
+        .find(|x| SHORT_DAYS[x.weekday() as usize] == goal)
+        .map(|x| x.and_hms(0, 0, 0))
 }
