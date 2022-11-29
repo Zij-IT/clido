@@ -9,7 +9,7 @@ pub fn list(sub_args: &ArgMatches<'_>) -> Result<()> {
         return Ok(());
     }
 
-    let filters = sub_args
+    let required_tags = sub_args
         .values_of("filter")
         .map(|args| args.into_iter().map(str::to_string).collect::<Vec<_>>());
 
@@ -20,8 +20,11 @@ pub fn list(sub_args: &ArgMatches<'_>) -> Result<()> {
     let mut at_least_one = false;
 
     for (id, todo) in todos.iter().enumerate() {
-        if let Some(filter_list) = filters.as_ref() {
-            if !filter_list.iter().any(|filter| todo.tags.contains(filter)) {
+        if let Some(required_tags) = required_tags.as_ref() {
+            if !required_tags
+                .iter()
+                .any(|filter| todo.tags.contains(filter))
+            {
                 continue;
             }
         }
