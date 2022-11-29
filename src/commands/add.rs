@@ -19,7 +19,7 @@ pub struct Add {
     #[arg(short = 'd', long = "due", value_name = "DUE_DATE")]
     due_date: Option<String>,
 
-    #[arg(short = 't', long = "tags", value_name = "TAGS")]
+    #[arg(short = 't', long = "tags", value_name = "TAGS", value_delimiter = ',')]
     tags: Option<Vec<String>>,
 }
 

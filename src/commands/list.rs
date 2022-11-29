@@ -10,7 +10,7 @@ pub struct List {
     #[arg(short = 'c', long = "complete")]
     show_complete: bool,
 
-    #[arg(long = "filter", value_name = "TAGS")]
+    #[arg(long = "filter", value_name = "TAGS", value_delimiter = ',')]
     filter_tags: Option<Vec<String>>,
 }
 
