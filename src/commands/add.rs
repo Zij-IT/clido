@@ -14,13 +14,13 @@ pub struct Add {
     #[arg(value_name = "PRIORITY")]
     priority: Option<String>,
 
-    #[arg(value_name = "PRIORITY")]
+    #[arg(value_name = "START_DATE")]
     start_date: Option<String>,
 
-    #[arg(value_name = "PRIORITY")]
+    #[arg(value_name = "DUE_DATE")]
     due_date: Option<String>,
 
-    #[arg(value_name = "PRIORITY")]
+    #[arg(value_name = "TAGS")]
     tags: Option<Vec<String>>,
 }
 
