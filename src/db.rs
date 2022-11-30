@@ -1,10 +1,10 @@
 #![allow(clippy::use_self)]
 
 pub use super::todo::{Priority, Status, ToDo, ToDoList};
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 use tempfile::{NamedTempFile, PersistError};
 
-use std::io::{self, Write};
+use std::io::Write;
 use std::marker::PhantomData;
 use std::path::{Path, PathBuf};
 
@@ -70,6 +70,10 @@ impl<S: State> Database<S> {
 }
 
 impl Database<Clean> {
+    pub fn from_clido_dir() -> Result<Self> {
+        Self::from_path(clido_dir()?)
+    }
+
     pub fn from_path<P: Into<PathBuf>>(data_dir: P) -> Result<Self> {
         let data_dir = data_dir.into();
         let path = list_path(&data_dir);
@@ -102,13 +106,7 @@ impl Database<Clean> {
 }
 
 impl Database<Dirty> {
-    pub fn save(&self) {
-        if let Err(e) = self.save_to_file() {
-            let _ = writeln!(io::stderr(), "Clido: {:?}", e);
-        }
-    }
-
-    fn save_to_file(&self) -> Result<()> {
+    pub fn save(&self) -> Result<()> {
         let mut file = NamedTempFile::new_in(&self.data_dir).with_context(|| {
             format!(
                 "Could not create temp. database in: {}",
@@ -172,4 +170,19 @@ fn persist<P: AsRef<Path>>(file: NamedTempFile, path: P) -> Result<(), PersistEr
 fn list_path<P: AsRef<Path>>(data_dir: P) -> std::path::PathBuf {
     const DB_FILENAME: &str = "clido.db";
     data_dir.as_ref().join(DB_FILENAME)
+}
+
+fn clido_dir() -> Result<PathBuf> {
+    let data_dir = match std::env::var_os("_CLIDO_DIR") {
+        Some(os_str) => PathBuf::from(os_str),
+        None => match dirs_next::data_local_dir() {
+            Some(mut dir) => {
+                dir.push("clido");
+                dir
+            }
+            None => bail!("Could not find data directory. Please set _CLIDO_DIR."),
+        },
+    };
+
+    Ok(data_dir)
 }

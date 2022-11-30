@@ -4,7 +4,6 @@ mod list;
 mod mark;
 
 use super::db::{Database, Priority, Status, ToDo};
-use super::util::clido_dir;
 
 use anyhow::Result;
 use chrono::{Local, NaiveDate};

@@ -1,4 +1,4 @@
-use super::{clido_dir, Database, Local, NaiveDate, Priority, Result, Status, ToDo};
+use super::{Database, Local, NaiveDate, Priority, Result, Status, ToDo};
 use chrono::{Datelike, NaiveDateTime};
 use clap::Args;
 
@@ -71,9 +71,7 @@ pub fn add(command: &Add) -> Result<()> {
         status: Status::Pending,
     };
 
-    Database::from_path(clido_dir()?)?.add(todo).save();
-
-    Ok(())
+    Database::from_clido_dir()?.add(todo).save()
 }
 
 fn date_from_input(date: &str) -> NaiveDateTime {

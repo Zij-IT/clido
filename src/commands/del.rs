@@ -1,6 +1,6 @@
 use clap::Args;
 
-use super::{clido_dir, Database, Result};
+use super::{Database, Result};
 
 #[derive(Debug, Args)]
 #[command(
@@ -18,9 +18,5 @@ pub struct Delete {
 }
 
 pub fn del(command: &Delete) -> Result<()> {
-    Database::from_path(clido_dir()?)?
-        .delete(command.todo_id)
-        .save();
-
-    Ok(())
+    Database::from_clido_dir()?.delete(command.todo_id).save()
 }

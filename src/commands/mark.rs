@@ -1,6 +1,6 @@
 use clap::Args;
 
-use super::{clido_dir, Database, Result};
+use super::{Database, Result};
 
 #[derive(Debug, Args)]
 #[command(arg_required_else_help = true, about = "Marks a task as complete")]
@@ -14,9 +14,7 @@ pub struct Mark {
 }
 
 pub fn mark(command: &Mark) -> Result<()> {
-    Database::from_path(clido_dir()?)?
+    Database::from_clido_dir()?
         .mark_complete(command.todo_id)
-        .save();
-
-    Ok(())
+        .save()
 }

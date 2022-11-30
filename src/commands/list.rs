@@ -1,6 +1,6 @@
 use clap::Args;
 
-use super::{clido_dir, format, Database, Result, Status, Table};
+use super::{format, Database, Result, Status, Table};
 
 #[derive(Debug, Args)]
 #[command(about = "Displays all items in the todo list")]
@@ -21,7 +21,7 @@ pub struct List {
 }
 
 pub fn list(command: &List) -> Result<()> {
-    let db = Database::from_path(clido_dir()?)?;
+    let db = Database::from_clido_dir()?;
     let todos = db.todos();
 
     let todos = todos.iter().enumerate().filter(|(_, todo)| {
