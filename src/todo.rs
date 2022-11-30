@@ -57,38 +57,8 @@ impl ToDoUpdate {
         Self::default()
     }
 
-    pub fn with_due_date(mut self, due: NaiveDateTime) -> Self {
-        self.due = Some(Some(due));
-        self
-    }
-
-    pub fn with_priority(mut self, prio: Priority) -> Self {
-        self.prio = Some(Some(prio));
-        self
-    }
-
-    pub fn with_recurrence(mut self, rec: Recurrence) -> Self {
-        self.recur = Some(Some(rec));
-        self
-    }
-
-    pub fn with_desc(mut self, desc: String) -> Self {
-        self.desc = Some(desc);
-        self
-    }
-
-    pub fn with_start_date(mut self, start: NaiveDateTime) -> Self {
-        self.start = Some(start);
-        self
-    }
-
     pub fn with_status(mut self, status: Status) -> Self {
         self.status = Some(status);
-        self
-    }
-
-    pub fn with_tags(mut self, tags: Vec<String>) -> Self {
-        self.tags = Some(tags);
         self
     }
 }
