@@ -2,6 +2,7 @@ mod add;
 mod del;
 mod list;
 mod mark;
+mod modify;
 
 use super::db::{Database, Priority, Status, ToDo};
 
@@ -13,6 +14,7 @@ pub use add::{add, Add};
 pub use del::{del, Delete};
 pub use list::{list, List};
 pub use mark::{mark, Mark};
+pub use modify::{modify, Modify};
 
 const SHORT_DAYS: [&str; 7] = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 

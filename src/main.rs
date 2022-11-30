@@ -27,6 +27,7 @@ enum Command {
     Delete(commands::Delete),
     Mark(commands::Mark),
     List(commands::List),
+    Modify(commands::Modify),
 }
 
 fn main() -> Result<()> {
@@ -35,5 +36,6 @@ fn main() -> Result<()> {
         Command::Delete(del) => commands::del(&del),
         Command::Mark(mark) => commands::mark(&mark),
         Command::List(list) => commands::list(&list),
+        Command::Modify(mods) => commands::modify(&mods),
     }
 }

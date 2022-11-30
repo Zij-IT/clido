@@ -93,7 +93,7 @@ impl ToDoUpdate {
     }
 }
 
-#[derive(PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize, ValueEnum)]
 pub enum Status {
     Complete,
     Pending,
@@ -127,7 +127,7 @@ impl ToString for Priority {
     }
 }
 
-#[derive(PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Recurrence {
     Daily(NaiveDateTime),
     Weekly(NaiveDateTime),
