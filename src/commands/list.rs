@@ -1,4 +1,4 @@
-use clap::Args;
+use clap::{Args, ValueEnum};
 
 use super::{format, Database, Result, Status, Table};
 
@@ -18,20 +18,48 @@ pub struct List {
         help = "Filters list to only show tasks which have at least one of the provided tags"
     )]
     filter_tags: Option<Vec<String>>,
+
+    #[arg(
+        long = "sort-on",
+        value_name = "FIELD",
+        help = "Sorts the tasks which are to be displayed by comparing the provided field"
+    )]
+    sort_on: Option<Field>,
+}
+
+#[derive(Debug, Clone, Copy, ValueEnum)]
+pub enum Field {
+    Id,
+    Description,
+    StartDate,
+    Priority,
+    DueDate,
 }
 
 pub fn list(command: List) -> Result<()> {
     let db = Database::from_clido_dir()?;
     let todos = db.todos();
 
-    let todos = todos.iter().enumerate().filter(|(_, todo)| {
-        (command.show_complete && todo.status == Status::Complete)
-            || (command.show_pending && todo.status == Status::Pending)
-            || match command.filter_tags.as_ref() {
-                Some(tags) => tags.iter().any(|tag| todo.tags.contains(tag)),
-                None => !command.show_pending && !command.show_complete,
-            }
-    });
+    let mut todos: Vec<_> = todos
+        .iter()
+        .enumerate()
+        .filter(|(_, todo)| {
+            (command.show_complete && todo.status == Status::Complete)
+                || (command.show_pending && todo.status == Status::Pending)
+                || match command.filter_tags.as_ref() {
+                    Some(tags) => tags.iter().any(|tag| todo.tags.contains(tag)),
+                    None => !command.show_pending && !command.show_complete,
+                }
+        })
+        .collect();
+
+    match command.sort_on {
+        Some(Field::Description) => todos.sort_by_key(|(_, todo)| &todo.desc),
+        Some(Field::StartDate) => todos.sort_by_key(|(_, todo)| &todo.start),
+        Some(Field::Priority) => todos.sort_by_key(|(_, todo)| &todo.prio),
+        Some(Field::DueDate) => todos.sort_by_key(|(_, todo)| &todo.due),
+        Some(Field::Id) | None => {}
+    }
 
     let mut table = get_list_table();
 

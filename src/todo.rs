@@ -78,7 +78,7 @@ impl Status {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, Copy, ValueEnum)]
+#[derive(Ord, PartialOrd, Debug, PartialEq, Eq, Serialize, Deserialize, Clone, Copy, ValueEnum)]
 pub enum Priority {
     Low,
     #[value(alias("mid"))]
