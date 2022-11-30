@@ -64,17 +64,18 @@ pub struct Modify {
     tags: Option<Vec<String>>,
 }
 
-pub fn modify(mods: &Modify) -> Result<()> {
-    let mut update = ToDoUpdate::new();
-    update.desc = mods.desc.clone();
-    update.tags = mods.tags.clone();
-    update.prio = mods.priority;
-    update.status = mods.status;
-    update.start = mods.start_date.as_deref().map(super::date_from_input);
-    update.due = mods
-        .due_date
-        .as_ref()
-        .map(|x| x.as_deref().map(super::date_from_input));
+pub fn modify(mods: Modify) -> Result<()> {
+    let update = ToDoUpdate {
+        recur: None,
+        desc: mods.desc,
+        tags: mods.tags,
+        prio: mods.priority,
+        status: mods.status,
+        start: mods.start_date.as_deref().map(super::date_from_input),
+        due: mods
+            .due_date
+            .map(|x| x.as_deref().map(super::date_from_input)),
+    };
 
     Database::from_clido_dir()?
         .update(mods.todo_id, update)

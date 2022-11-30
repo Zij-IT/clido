@@ -45,7 +45,7 @@ pub struct Add {
 }
 
 pub fn add(command: Add) -> Result<()> {
-    let desc = command.todo.clone();
+    let desc = command.todo;
 
     let start = command
         .start_date
@@ -56,7 +56,7 @@ pub fn add(command: Add) -> Result<()> {
 
     let prio = command.priority;
 
-    let tags = command.tags.as_ref().map_or(Vec::new(), Clone::clone);
+    let tags = command.tags.unwrap_or_else(Vec::new);
 
     let todo = ToDo {
         desc,
