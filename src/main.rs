@@ -32,10 +32,10 @@ enum Command {
 
 fn main() -> Result<()> {
     match Cli::parse().command {
-        Command::Add(add) => commands::add(&add),
-        Command::Delete(del) => commands::del(&del),
-        Command::Mark(mark) => commands::mark(&mark),
-        Command::List(list) => commands::list(&list),
-        Command::Modify(mods) => commands::modify(&mods),
+        Command::Add(add) => commands::add(add),
+        Command::Delete(del) => commands::del(del),
+        Command::Mark(mark) => commands::mark(mark),
+        Command::List(list) => commands::list(list),
+        Command::Modify(mods) => commands::modify(mods),
     }
 }

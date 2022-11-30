@@ -15,7 +15,7 @@ pub struct Mark {
     todo_id: usize,
 }
 
-pub fn mark(command: &Mark) -> Result<()> {
+pub fn mark(command: Mark) -> Result<()> {
     Database::from_clido_dir()?
         .update(
             command.todo_id,

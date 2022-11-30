@@ -17,6 +17,6 @@ pub struct Delete {
     todo_id: usize,
 }
 
-pub fn del(command: &Delete) -> Result<()> {
+pub fn del(command: Delete) -> Result<()> {
     Database::from_clido_dir()?.delete(command.todo_id).save()
 }

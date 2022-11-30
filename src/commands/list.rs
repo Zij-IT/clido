@@ -20,7 +20,7 @@ pub struct List {
     filter_tags: Option<Vec<String>>,
 }
 
-pub fn list(command: &List) -> Result<()> {
+pub fn list(command: List) -> Result<()> {
     let db = Database::from_clido_dir()?;
     let todos = db.todos();
 

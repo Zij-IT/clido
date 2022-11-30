@@ -44,7 +44,7 @@ pub struct Add {
     tags: Option<Vec<String>>,
 }
 
-pub fn add(command: &Add) -> Result<()> {
+pub fn add(command: Add) -> Result<()> {
     let desc = command.todo.clone();
 
     let start = command
