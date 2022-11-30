@@ -1,5 +1,7 @@
 #![allow(clippy::use_self)]
 
+use crate::todo::ToDoUpdate;
+
 pub use super::todo::{Priority, Status, ToDo, ToDoList};
 use anyhow::{bail, Context, Result};
 use tempfile::{NamedTempFile, PersistError};
@@ -46,15 +48,35 @@ impl<S: State> Database<S> {
         }
     }
 
-    pub fn mark_complete(mut self, id: usize) -> Database<Dirty> {
-        if let Some((_, todo)) = self
-            .todos
-            .iter_mut()
-            .enumerate()
-            .find(|(i, _todo)| *i == id)
-        {
-            todo.status = Status::Complete;
-            println!("Successfully marked the item complete.");
+    pub fn update(mut self, id: usize, update: ToDoUpdate) -> Database<Dirty> {
+        if let Some(todo) = self.todos.get_mut(id) {
+            if let Some(desc) = update.desc {
+                todo.desc = desc;
+            }
+
+            if let Some(due) = update.due {
+                todo.due = due;
+            }
+
+            if let Some(start) = update.start {
+                todo.start = start;
+            }
+
+            if let Some(prio) = update.prio {
+                todo.prio = prio;
+            }
+
+            if let Some(tags) = update.tags {
+                todo.tags = tags;
+            }
+
+            if let Some(recur) = update.recur {
+                todo.recur = recur;
+            }
+
+            if let Some(status) = update.status {
+                todo.status = status;
+            }
         }
 
         Database::<Dirty> {

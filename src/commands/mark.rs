@@ -1,5 +1,7 @@
 use clap::Args;
 
+use crate::todo::{Status, ToDoUpdate};
+
 use super::{Database, Result};
 
 #[derive(Debug, Args)]
@@ -15,6 +17,9 @@ pub struct Mark {
 
 pub fn mark(command: &Mark) -> Result<()> {
     Database::from_clido_dir()?
-        .mark_complete(command.todo_id)
+        .update(
+            command.todo_id,
+            ToDoUpdate::new().with_status(Status::Complete),
+        )
         .save()
 }
